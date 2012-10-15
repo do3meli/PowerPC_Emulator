@@ -9,7 +9,7 @@
 		<table class="table table-striped">
 			<tr>
 				<td>Programmzähler</td>
-				<td><input type="text" name="programmcounter" value="0" /></td>
+				<td><input type="text" name="stepcounter" value="0" /></td>
 			</tr>
 			<tr>
 				<td colspan="2">Befehlsregister</td>
@@ -118,23 +118,82 @@
 				</tr>
 			</thead>
 			<tbody>
-				
+				<tr>	
+					<td>100</td>
+					<td><input type="text" value="" placeholder="Befehl" name="code100" /></td>
+					<td><input type="text" value="" placeholder="Maschinencode" name="code100Bin" /></td>
+				</tr>				
 			</tbody>																																																		
 		</table>
-		<table id="programmcode" class="table table-striped">
+		<table id="inputvariables" class="table table-striped">
 			<thead>
 				<tr>
 					<th>Addr</th>
-					<th>Befehl</th>
-					<th>Maschinencode</th>
+					<th>Bin</th>
+					<th>Dez</th>
 				</tr>
 			</thead>
 			<tbody>
-				
+				<tr>	
+					<td>500</td>
+					<td><input type="text" value="" placeholder="Binär" name="input500Bin" /></td>
+					<td><input type="text" value="" placeholder="Dezimal" name="input500" /></td>
+				</tr>					
 			</tbody>																																																		
 		</table>		
 	</div>
 	<div class="span4">
+		<table id="registers" class="table table-striped">
+			<thead>
+				<tr>
+					<th>Addr</th>
+					<th>Name</th>
+					<th>Bin</th>
+					<th>Dez</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>	
+					<td>00</td>
+					<td>Akku</td>
+					<td><input type="text" value="" placeholder="Binär" name="akkuBin" /></td>
+					<td><input type="text" value="" placeholder="Dezimal" name="akku" /></td>
+				</tr>
+				<tr>	
+					<td>01</td>
+					<td>Register 1</td>
+					<td><input type="text" value="" placeholder="Binär" name="reg1Bin" /></td>
+					<td><input type="text" value="" placeholder="Dezimal" name="reg1" /></td>
+				</tr>	
+				<tr>	
+					<td>10</td>
+					<td>Register 2</td>
+					<td><input type="text" value="" placeholder="Binär" name="reg2Bin" /></td>
+					<td><input type="text" value="" placeholder="Dezimal" name="reg2" /></td>
+				</tr>	
+				<tr>	
+					<td>11</td>
+					<td>Register 3</td>
+					<td><input type="text" value="" placeholder="Binär" name="reg3Bin" /></td>
+					<td><input type="text" value="" placeholder="Dezimal" name="reg3" /></td>
+				</tr>	
+				<tr>	
+					<td></td>
+					<td>Befehlszähler</td>
+					<td><input type="text" value="" placeholder="Binär" name="commandPointerBin" /></td>
+					<td><input type="text" value="" placeholder="Dezimal" name="commandPointer" /></td>
+				</tr>					
+				<tr>	
+					<td></td>
+					<td>Carry-Flag</td>
+					<td><input type="checkbox" value="" name="carry" /></td>
+					<td></td>
+				</tr>																						
+			</tbody>																																																
+		</table>	
+		<div id="commandCentral">
+			<input type="button" name="step" value="Step" /><input type="button" name="slow" value="Slow" /><input type="button" name="fast" value="Fast" />
+		</div>					
 	</div>		
 </body>
 </html>
