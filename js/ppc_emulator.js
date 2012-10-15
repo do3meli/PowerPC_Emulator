@@ -10,7 +10,7 @@ function twocomplement(x) {
 		var string = x.toString();
 		var dec = dec2bin(string.substring(1));
 		var invertstr = "";
-		alert(dec);
+	
 		for (i=0; i<dec.length; i++){
 			
 			if(parseInt(dec.substring(i,i+1)) == 1){
@@ -19,7 +19,7 @@ function twocomplement(x) {
 				invertstr = invertstr + "1";
 			}
 		}
-		alert(invertstr);
+
 		// if last sign == 0 then just replace it by a 1
 		if(invertstr.substr(invertstr.length - 1) == 0){
 			return invertstr.substr(0,invertstr.length - 1) + "1";
