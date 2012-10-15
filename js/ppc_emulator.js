@@ -9,24 +9,26 @@ function twocomplement(x) {
 	if(x < 0){
 		var string = x.toString();
 		var dec = dec2bin(string.substring(1));
-		
-		alert(dec);
-		
 		var invertstr = "";
-		for (i=1; i<=dec.length; i++){
+	
+		for (i=0; i<dec.length; i++){
 			
-		
-			if(parseInt(dec.substring(i)) == 1){
+			if(parseInt(dec.substring(i,i+1)) == 1){
 				invertstr = invertstr + "0";	
 			}else{
 				invertstr = invertstr + "1";
 			}
-			
-			
 		}
-		alert(invertstr);
-		
-		return false;
+
+		// if last sign == 0 then just replace it by a 1
+		if(invertstr.substr(invertstr.length - 1) == 0){
+			return invertstr.substr(0,invertstr.length - 1) + "1";
+		}else{
+			// add in decimal system 1 and convert back to binary
+			res = parseInt(invertstr,2) + 1
+			return res.toString(2);		
+		}
+	
 	}else{
 		return dec2bin(x);
 	}
@@ -53,7 +55,7 @@ function mnemonic2machinecode(x){
 		var numberFind = new RegExp('[1-9]+', 'g');
 		var number = x.match(numberFind);
 		output = "ADDD " + number;
-		outputBin = "1" + dec2bin(number);		
+		outputBin = "1" + twocomplement(number);		
 	} else 	if (keyword == "INC"){
 		output = "INC";
 		outputBin = "0000000100000000";	
