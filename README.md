@@ -1,4 +1,4 @@
-# Aufgabe "[Mini-Power-PC](http://lords-von-handschreiber.github.com/edu-zhaw-inf-Mini-Power-PC/)"
+# Aufgabe Mini-Power-PC
 
 ## Aufgabenbeschreibung
 Schreiben Sie ein Programm in einer beliebigen Programmiersprache/Umgebung, das den in der Vorlesung spezifizierten "Mini-Power-PC" emuliert - d.h. alle Befehle des Befehlssatzes (siehe Anlage Befehlssatz "Mini-Power-PC") ausführt.
