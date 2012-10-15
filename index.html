@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<link href="bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+	<div class="span4">
+		<table class="table table-striped">
+			<tr>
+				<td>Programmzähler</td>
+				<td><input type="text" name="programmcounter" value="0" /></td>
+			</tr>
+			<tr>
+				<td colspan="2">Befehlsregister</td>
+			</tr>
+			<tr>	
+				<td>CLR Rnr</td>
+				<td>0 0 0 0 x x 1 0 1 < n o t   u ></td>
+			</tr>
+			<tr>	
+				<td>ADD Rnr</td>
+				<td>0 0 0 0 x x 1 1 1 < n o t   u ></td>
+			</tr>
+			<tr>	
+				<td>ADDD #Zahl</td>
+				<td>1 < - - - - Z a h l - - - - - ></td>
+			</tr>
+			<tr>	
+				<td>INC</td>
+				<td>0 0 0 0 0 0 0 1 <n o t   u s e d></n></td>
+			</tr>
+			<tr>	
+				<td>DEC</td>
+				<td>0 0 0 0 0 1 0 0 <n o t   u s e d></n></td>
+			</tr>
+			<tr>	
+				<td>LWDD Rnr , #Adr</td>
+				<td>0 1 0 - x x < A d r e s s e - ></td>
+			</tr>
+			<tr>	
+				<td>SWDD Rnr, #Adr</td>
+				<td>0 1 1 - x x < A d r e s s e - ></td>
+			</tr>
+			<tr>	
+				<td>SRA</td>
+				<td>0 0 0 0 0 1 0 1 <n o t   u s e d></td>
+			</tr>
+			<tr>	
+				<td>SLA</td>
+				<td>0 0 0 0 1 0 0 0 <n o t   u s e d></td>
+			</tr>
+			<tr>	
+				<td>SRL</td>
+				<td>0 0 0 0 0 1 0 0 1 <n o t   u s e d></td>
+			</tr>
+			<tr>	
+				<td>SLL</td>
+				<td>0 0 0 0 1 1 0 0 <n o t   u s e d></td>
+			</tr>
+			<tr>	
+				<td>AND Rnr</td>
+				<td>0 0 0 0 x x 1 0 0 < n o t   u ></td>
+			</tr>
+			<tr>	
+				<td>OR Rnr</td>
+				<td>0 0 0 0 x x 1 1 0 < n o t   u ></td>
+			</tr>
+			<tr>	
+				<td>NOT</td>
+				<td>0 0 0 0 0 0 0 0 1 < n o t   u ></td>
+			</tr>	
+			<tr>	
+				<td>BZ Rnr</td>
+				<td>0 0 0 1 x x 1 0 < n o t   u s ></td>
+			</tr>	
+			<tr>	
+				<td>BNZ Rnr</td>
+				<td>0 0 0 1 x x 0 1 < n o t   u s ></td>
+			</tr>
+			<tr>	
+				<td>BC Rnr</td>
+				<td>0 0 0 1 x x 1 1 < n o t   u s ></td>
+			</tr>
+			<tr>	
+				<td>B Rnr</td>
+				<td>0 0 0 1 x x 0 0 < n o t   u s ></td>
+			</tr>
+			<tr>	
+				<td>BZD #Adr</td>
+				<td>0 0 1 1 0 - < A d r e s s e - ></td>
+			</tr>	
+			<tr>	
+				<td>BNZD #Adr</td>
+				<td>0 0 1 0 1 - < A d r e s s e - ></td>
+			</tr>	
+			<tr>	
+				<td>BCD #Adr</td>
+				<td>0 0 1 1 1 - < A d r e s s e - ></td>
+			</tr>
+			<tr>	
+				<td>BD #Adr</td>
+				<td>0 0 1 0 0 - < A d r e s s e - ></td>
+			</tr>
+			<tr>	
+				<td>STOP</td>
+				<td>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</td>
+			</tr>																																																			
+		</table>
+	</div>
+	<div class="span4">
+		<table id="programmcode" class="table table-striped">
+			<thead>
+				<tr>
+					<th>Addr</th>
+					<th>Befehl</th>
+					<th>Maschinencode</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>																																																		
+		</table>
+		<table id="programmcode" class="table table-striped">
+			<thead>
+				<tr>
+					<th>Addr</th>
+					<th>Befehl</th>
+					<th>Maschinencode</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>																																																		
+		</table>		
+	</div>
+	<div class="span4">
+	</div>		
+</body>
+</html>
