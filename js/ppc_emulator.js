@@ -1,23 +1,44 @@
-var akku = 0;
-var reg = new Array();
-reg[1] = 0;
-reg[2] = 0;
-reg[3] = 0;
-var storage = new Array();
-var pc = 100; //programm counter
-var sc = 0; //step counter
+//**************************************************
+//* PowerPC emulator
+//* Raffael Santschi - https://github.com/knobli
+//* Dominic Schlegel - https://github.com/do3meli
 
-/*
- * Help and gui functions
- */
+//* October 2012
+//**************************************************
 
-//programm counter
+
+//***************
+// VAR INIT
+//***************
+var akku = 0;						// accumulator value
+var reg = new Array();				// register array
+reg[1] = 0;							// register nr 1
+reg[2] = 0;							// register nr 2
+reg[3] = 0;							// register nr 3
+var storage = new Array();			// storage array
+var pc = 100; 						// programm counter
+var sc = 0; 						// step counter
+
+//*************************
+// HELP AND GUI FUNCTIONS
+//*************************
+
+// this function is getting called on page load event
+// it is setting up the page layout and updates the GUI with needful information
 function init(){
-	setPCinGui();
-	setSCinGui();
+	
+	setPCinGui();		// updates programm counter field in GUI
+	setSCinGui();		// updates step counter field in GUI
+	
+	// get emtpy table for programmcode
 	var table = document.getElementById('programmcode').getElementsByTagName('tbody')[0];
+	
+	// now create all fields for programmcode from storage 100 - 499
 	for(var i = 100; i <= 499; i++){
+		
 		var tr = table.insertRow(table.rows.length);	
+		
+		// create new input object for code
 		var code = document.createElement('input');
 			code.type = "text";
 			code.value = "";
@@ -25,7 +46,8 @@ function init(){
 			code.placeholder = "Befehl";
 			code.setAttribute('onChange', "updateProgrammCode(event);" );
 			code.id = "code" + i;
-		
+			
+		// create new input object for binary code
 		var codeBin = document.createElement('input');
 			codeBin.type = "text";
 			codeBin.value = "";
@@ -34,6 +56,7 @@ function init(){
 			codeBin.id = "code" + i + "Bin";
 			codeBin.disabled = true;	
 		
+		// now add newly created object
 		var td = tr.insertCell(0);
 		td.appendChild(codeBin);
 		
@@ -42,10 +65,13 @@ function init(){
 		
 		var td = tr.insertCell(0);
 		td.innerHTML = i;
-
+		
+		// increase the counter
 		i++;
+		
 		var tr = table.insertRow(table.rows.length);	
 		
+		// create a second new binary field
 		var codeBin = document.createElement('input');
 			codeBin.type = "text";
 			codeBin.value = "";
@@ -54,6 +80,7 @@ function init(){
 			codeBin.id = "code" + i + "Bin";
 			codeBin.disabled = true;		
 		
+		// now add second newly create object and write some data to GUI
 		var td = tr.insertCell(0);
 		td.appendChild(codeBin);
 		
@@ -63,9 +90,17 @@ function init(){
 		td.innerHTML = i;				
 				
 	}
+	
+	// now do the same for the input variable
+	// get the empty table
 	var table = document.getElementById('inputvariables').getElementsByTagName('tbody')[0];
+	
+	// loop over the input value storage addresses to create objects
 	for(var i = 500; i <= 529; i++){	
+		
 		var tr = table.insertRow(table.rows.length);	
+		
+		// create new input object decimal
 		var input = document.createElement('input');
 			input.type = "text";
 			input.value = "";
@@ -74,6 +109,7 @@ function init(){
 			input.setAttribute('onChange', "updateInputValue(event);" );
 			input.id = "input" + i;
 		
+		// create new input objcect binary
 		var inputBin = document.createElement('input');
 			inputBin.type = "text";
 			inputBin.value = "";
@@ -82,6 +118,7 @@ function init(){
 			inputBin.id = "input" + i + "Bin";
 			inputBin.disabled = true;	
 		
+		// add newly created fields to GUI
 		var td = tr.insertCell(0);
 		td.appendChild(inputBin);
 		
@@ -91,10 +128,12 @@ function init(){
 		var td = tr.insertCell(0);
 		td.innerHTML = i;	
 		
+		// increase counter
 		i++;
 		
 		var tr = table.insertRow(table.rows.length);	
-
+		
+		// create second object for binary as we store 
 		var inputBin = document.createElement('input');
 			inputBin.type = "text";
 			inputBin.value = "";
@@ -103,6 +142,7 @@ function init(){
 			inputBin.id = "input" + i + "Bin";
 			inputBin.disabled = true;	
 		
+		// also write the second object to the GUI
 		var td = tr.insertCell(0);
 		td.appendChild(inputBin);
 		
@@ -113,59 +153,77 @@ function init(){
 	}	
 }
 
+// this function updates the commandPointer field in GUI
+// the commandPointer and the commandPointerBin field are getting set by this function
+// the value from the pc variable is taken for the update
 function setPCinGui(){
 	$("#commandPointer").val(pc);
 	$("#commandPointerBin").val(twocomplement(pc,16));
 }
 
+// increases the programm counter variable by 1
 function incPC(){
 	setPC(pc + 1);
 }
 
+// This is the setter function for the programm counter
+// once the variable has been set it automatically updates the GUI by calling setPCinGui method
 function setPC(x){
 	pc = x;
 	setPCinGui();
 }
 
 
-//step counter
+// this function updates the stepcounter field in GUI
+// it takes the global variable sc as value
 function setSCinGui(){
 	$("#stepcounter").val(sc);
 }
 
+// This function updates the stepcounter variable
+// once the variable has been set it automatically updates the GUI by calling setSCinGUI method
 function incSC(){
 	sc++;
 	setSCinGui();
 }
 
-
-//register
+// this functions updates the GUI 
+// it sets field value in GUI for the given register
+// the value is taken from global reg array
 function setReginGui(number){
 	$("#reg" + number).val(reg[number]);
 	$("#reg" + number + "Bin").val(twocomplement(reg[number],16));
 }
 
+// sets the Register with a given number to a value x
+// after the set the gui gets updated automatically via setPCinGUI function
 function setReg(x,number){
 	reg[number] = x;
 	setPCinGui(number);
 }
 
+// this function returns the value of a register number
+// the values are taken from global reg array
 function getReg(number){
-	retunr reg[number];
+	return reg[number];
 }
 
 
-//akku
+// Updates the Akku fields in GUI
+// both values (decimal and binary) are updated
 function setAkkuinGui(){
 	$("#akku").val(akku);
 	$("#akkuBin").val(twocomplement(akku,16));
 }
 
+// sets the accu to a given value x
+// and updates the GUI
 function setAkku(x){
 	akku = x;
 	setAkkuinGui();
 }
 
+// returns the current value of akku
 function getAkku(){
 	return akku;
 }
@@ -213,9 +271,9 @@ function updateProgrammCode(event){
 	setProgrammCodeBin(event.target.value, elementId);
 }
 
-/*
- * Main functions
- */
+//************************
+// MAIN FUNCTIONS
+//************************
 
 // this function converts a decimal input string into a binary
 function dec2bin(input) {
@@ -225,11 +283,14 @@ function dec2bin(input) {
 // this function converts a decimal number into two's complement
 function twocomplement(x,digits) {
 	
+	// check if the given number is negative
 	if(x < 0){
+		// normal convert from dec2bin
 		var string = x.toString();
 		var dec = growToNumberOfDigits(dec2bin(string.substring(1)),digits);
 		var invertstr = "";
 	
+		// invert the string
 		for (i=0; i<dec.length; i++){
 			
 			if(parseInt(dec.substring(i,i+1)) == 1){
@@ -247,23 +308,26 @@ function twocomplement(x,digits) {
 			res = parseInt(invertstr,2) + 1
 			return res.toString(2);		
 		}
-	
+		
 	}else{
+		// if positive number do normal dec2bin convert
 		return growToNumberOfDigits(dec2bin(x),digits);
 	}
-
 }
 
-//convert mnemonic code to machine code
+// convert a given mnemonic code to machine code
+// returns the machinecode for a givven mnemonic
 function mnemonic2machinecode(x){
 	var outputBin = defineAction(x,false);
 	return outputBin;
 }
 
+// executes a given mnemonic
 function runMnemonic(x){
 	defineAction(x,true);
 }
 
+// THE function where all commands are 
 function defineAction(x,executeCommand){	
 	var keywordFind = new RegExp('[a-zA-Z]+', 'g');
 	var keyword = x.match(keywordFind);
@@ -394,6 +458,8 @@ function findAddress(x){
 	return address;
 }  
 
+// this function blows up a number with zeros
+// the second value digits defines the total length of x
 function growToNumberOfDigits(x,digits){
 	var outputX = "";
 	if (x.length < digits){
@@ -407,8 +473,4 @@ function growToNumberOfDigits(x,digits){
 		outputX = x;
 	}
 	return outputX;
-}
-
-function test(){
-	alert('test');
 }
