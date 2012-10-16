@@ -18,6 +18,10 @@ reg[3] = 0;							// register nr 3
 var storage = new Array();			// storage array
 var pc = 100; 						// programm counter
 var sc = 0; 						// step counter
+var carryFlag = false;
+var max = Math.pow(2, 15) - 1;
+var min = 0 - Math.pow(2, 15);
+var endFlag = 0;
 
 //*************************
 // HELP AND GUI FUNCTIONS
@@ -153,6 +157,68 @@ function init(){
 	}	
 }
 
+function loadTest(){
+	setStorage("LWDD 0 #504", 100);
+	setStorage("SLA", 102);
+	setStorage("BCD #124", 104);
+	setStorage("LWDD 1 #502", 106);
+	setStorage("ADD 1", 108);
+	setStorage("SLA", 110);
+	setStorage("BCD #124", 112);
+	setStorage("SLA", 114);
+	setStorage("BCD #124", 116);
+	setStorage("LWDD 1 #500", 116);
+	setStorage("ADD 1", 118);
+	setStorage("BCD #124", 120);
+	setStorage("SWDD 0 #506", 122);
+	setStorage("STOP", 124);
+	
+	setStorage(14, 500);
+	setStorage(7, 502);
+	setStorage(66, 504);	
+}
+
+function loadTestFail(){
+	setStorage("LWDD 0 #504", 100);
+	setStorage("SLA", 102);
+	setStorage("BCD #124", 104);
+	setStorage("LWDD 1 #502", 106);
+	setStorage("ADD 1", 108);
+	setStorage("SLA", 110);
+	setStorage("BCD #124", 112);
+	setStorage("SLA", 114);
+	setStorage("BCD #124", 116);
+	setStorage("LWDD 1 #500", 116);
+	setStorage("ADD 1", 118);
+	setStorage("BCD #124", 120);
+	setStorage("SWDD 0 #506", 122);
+	setStorage("STOP", 124);
+	
+	setStorage(-125, 500);
+	setStorage(10000, 502);
+	setStorage(16, 504);	
+}
+
+function stepForward(){
+	runMnemonic(getStorage(getPC()));
+}
+
+function slow(){
+	while(endFlag == 0){
+		var timer = setTimeout(runMnemonic(getStorage(getPC())),30000);
+	}	
+}
+
+function fast(){
+	while(endFlag == 0){
+		runMnemonic(getStorage(getPC()));
+	}
+}
+
+function focusOn(x){
+	$("#code" + x).focus();
+}
+
 // this function updates the commandPointer field in GUI
 // the commandPointer and the commandPointerBin field are getting set by this function
 // the value from the pc variable is taken for the update
@@ -163,7 +229,7 @@ function setPCinGui(){
 
 // increases the programm counter variable by 1
 function incPC(){
-	setPC(pc + 1);
+	setPC(pc + 2);
 }
 
 // This is the setter function for the programm counter
@@ -171,6 +237,11 @@ function incPC(){
 function setPC(x){
 	pc = x;
 	setPCinGui();
+	focusOn(x);
+}
+
+function getPC(){
+	return pc;
 }
 
 
@@ -198,14 +269,22 @@ function setReginGui(number){
 // sets the Register with a given number to a value x
 // after the set the gui gets updated automatically via setPCinGUI function
 function setReg(x,number){
-	reg[number] = x;
-	setPCinGui(number);
+	if(number == 0){
+		setAkku(x);
+	} else {
+		reg[number] = x;
+		setReginGui(number);
+	}
 }
 
 // this function returns the value of a register number
 // the values are taken from global reg array
 function getReg(number){
-	return reg[number];
+	if(number == 0){
+		return getAkku();
+	} else {
+		return reg[number];
+	}
 }
 
 
@@ -220,12 +299,51 @@ function setAkkuinGui(){
 // and updates the GUI
 function setAkku(x){
 	akku = x;
+	if(x >= max || x <= min){
+		setCarryFlag(true);
+	}
 	setAkkuinGui();
 }
 
 // returns the current value of akku
 function getAkku(){
 	return akku;
+}
+
+function setCarryFlaginGui(){
+	$("#carryFlag").attr("checked", carryFlag);	
+	alert("CarryFlag: " + carryFlag);
+}
+
+// sets the accu to a given value x
+// and updates the GUI
+function setCarryFlag(x){
+	carryFlag = x;
+	setCarryFlaginGui(x);
+}
+
+// returns the current value of akku
+function getCarryFlag(){
+	return carryFlag;
+}
+
+// sets storage number to value
+function setStorage(value,number){
+	storage[number]=value;
+	if(number < 500){
+		var field = "code" + number;
+		$("#" + field).val(value);
+		setProgrammCodeinGui(value,field,number);
+	} else {
+		var field = "input" + number;
+		$("#" + field).val(value);
+		setInputValueinGui(value,field,number);
+	}
+}
+
+// returns storage number
+function getStorage(number){
+	return storage[number];
 }
 
 
@@ -242,8 +360,7 @@ function setInputValueinGui(value,field,number){
 function setInputValueBin(value,field){
 	var numberFind = new RegExp('[0-9]+', 'g');
 	var number = field.match(numberFind);
-	storage[number]=value;	
-	setInputValueinGui(value,field,number);
+	setStorage(value,number);	
 }
 
 // this function is getting called when an input value has been changed in GUI
@@ -265,8 +382,7 @@ function setProgrammCodeinGui(value,field,number){
 function setProgrammCodeBin(value,field){
 	var numberFind = new RegExp('[0-9]+', 'g');
 	var number = field.match(numberFind);
-	storage[number]=value;
-	setProgrammCodeinGui(value,field,number);
+	setStorage(value,number);
 }
 
 // this function gets called when the field in GUI is getting changed
@@ -346,19 +462,21 @@ function defineAction(x,executeCommand){
 	if (keyword == "CLR"){
 		var registerNumber=findRegister(x);
 		output = "CLR register: " + registerNumber;
-		outputBin = "0000" + dec2bin(registerNumber) + "1010000000";
+		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1010000000";
 		if(executeCommand){
 			//clear register
 			setReg(0,registerNumber);
+			incPC();
 		}
 	
 	} else 	if (keyword == "ADD"){
 		var registerNumber=findRegister(x);
 		output = "ADD to register: " + registerNumber;
-		outputBin = "0000" + dec2bin(registerNumber) + "1110000000";
+		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1110000000";
 		if(executeCommand){
 			//add register to akku
 			setAkku(getAkku() + getReg(registerNumber));
+			incPC();
 		}				
 	
 	} else 	if (keyword == "ADDD"){
@@ -366,104 +484,218 @@ function defineAction(x,executeCommand){
 		var number = x.match(numberFind);
 		output = "ADDD " + number;
 		outputBin = "1" + twocomplement(number,15);		
-	
+		if(executeCommand){
+			//add number to akku
+			setAkku(getAkku() + number);
+			incPC();
+		}	
+			
 	} else 	if (keyword == "INC"){
 		output = "INC";
 		outputBin = "0000000100000000";	
-	
+		if(executeCommand){
+			//increase akku
+			setAkku(getAkku() + 1);
+			incPC();
+		}	
+			
 	} else 	if (keyword == "DEC"){
 		output = "DEC";
 		outputBin = "0000010000000000";		
-	
+		if(executeCommand){
+			//decrease akku
+			setAkku(getAkku() - 1);
+			incPC();
+		}
+		
 	} else 	if (keyword == "LWDD"){
 		var registerNumber=findRegister(x);
 		var address=findAddress(x)
 		output = "LWDD from register: " + registerNumber + " to address " + address;
-		outputBin = "0100" + dec2bin(registerNumber) + dec2bin(address);		
+		outputBin = "0100" + growToNumberOfDigits(dec2bin(registerNumber),2) + growToNumberOfDigits(dec2bin(address),10);		
+		if(executeCommand){
+			//load address to register
+			setReg(getStorage(address),registerNumber);
+			incPC();
+		}
 	
 	} else 	if (keyword == "SWDD"){
 		var registerNumber=findRegister(x);
 		var address=findAddress(x);
 		output = "SWDD to register: " + registerNumber + " from address " + address;
-		outputBin = "0110" + dec2bin(registerNumber) + dec2bin(address);				
+		outputBin = "0110" + growToNumberOfDigits(dec2bin(registerNumber),2) + growToNumberOfDigits(dec2bin(address),10);				
+		if(executeCommand){
+			//save register to address
+			setStorage(getReg(registerNumber),address);
+			incPC();
+		}
 	
 	} else 	if (keyword == "SRA"){
 		output = "SRA";	
-		outputBin = "0000010100000000";	
+		outputBin = "0000010100000000";
+		if(executeCommand){
+			//akku durch 2
+			alert('Not yet implemented');
+			setAkku(getAkku() / 2);
+			incPC();
+		}			
 	
 	} else 	if (keyword == "SLA"){
 		output = "SLA";
-		outputBin = "0000100000000000";		
+		outputBin = "0000100000000000";
+		if(executeCommand){
+			//akku mal 2
+			alert('Not yet implemented');
+			setAkku(getAkku() * 2);
+			incPC();
+		}					
 	
 	} else 	if (keyword == "SRL"){
 		output = "SRL";
-		outputBin = "0000100100000000";		
+		outputBin = "0000100100000000";
+		if(executeCommand){
+			//akku durch 2
+			alert('Not yet implemented');
+			setAkku(getAkku() / 2);
+			incPC();
+		}				
 	
 	} else 	if (keyword == "SLL"){
 		output = "SLL";
-		outputBin = "0000110000000000";			
+		outputBin = "0000110000000000";
+		if(executeCommand){
+			//akku mal 2
+			alert('Not yet implemented');
+			setAkku(getAkku() * 2);
+			incPC();
+		}						
 	
 	} else 	if (keyword == "AND"){
 		var registerNumber=findRegister(x);
 		output = "AND register: " + registerNumber;
-		outputBin = "0000" + dec2bin(registerNumber) + "1000000000";		
+		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1000000000";
+		if(executeCommand){
+			alert('Not yet implemented');
+			incPC();
+		}					
 	
 	} else 	if (keyword == "OR"){
 		var registerNumber=findRegister(x);
 		output = "OR register: " + registerNumber;
-		outputBin = "0000" + dec2bin(registerNumber) + "1100000000";	
+		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1100000000";
+		if(executeCommand){
+			alert('Not yet implemented');
+			incPC();
+		}					
 	
 	} else 	if (keyword == "NOT"){
 		output = "NOT";
-		outputBin = "0000000010000000";		
+		outputBin = "0000000010000000";
+		if(executeCommand){
+			alert('Not yet implemented');
+			incPC();
+		}						
 	
 	} else 	if (keyword == "BZ"){
 		var registerNumber=findRegister(x);
 		output = "BZ register: " + registerNumber;
-		outputBin = "0001" + dec2bin(registerNumber) + "1000000000";	
+		outputBin = "0001" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1000000000";
+		if(executeCommand){
+			if(getAkku() == 0){
+				setPC(getReg(registerNumber));
+			} else {
+				incPC();
+			}
+		}					
 	
 	} else 	if (keyword == "BNZ"){
 		var registerNumber=findRegister(x);
 		output = "BNZ register: " + registerNumber;
-		outputBin = "0001" + dec2bin(registerNumber) + "0100000000";
+		outputBin = "0001" + growToNumberOfDigits(dec2bin(registerNumber),2) + "0100000000";
+		if(executeCommand){
+			if(getAkku() != 0){
+				setPC(getReg(registerNumber));
+			} else {
+				incPC();
+			}
+		}			
 	
 	} else 	if (keyword == "BC"){
 		var registerNumber=findRegister(x);
 		output = "BC register: " + registerNumber;
-		outputBin = "0001" + dec2bin(registerNumber) + "1100000000";	
+		outputBin = "0001" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1100000000";
+		if(executeCommand){
+			if(getCarryFlag()){
+				setPC(getReg(registerNumber));
+			} else {
+				incPC();
+			}
+		}				
 	
 	} else 	if (keyword == "B"){
 		var registerNumber=findRegister(x);
 		output = "B register: " + registerNumber;
-		outputBin = "0001" + dec2bin(registerNumber) + "0000000000";	
+		outputBin = "0001" + growToNumberOfDigits(dec2bin(registerNumber),2) + "0000000000";
+		if(executeCommand){
+			setPC(getReg(registerNumber));
+		}				
 	
 	} else 	if (keyword == "BZD"){
 		var address=findAddress(x);
 		output = "BZD to address " + address;
-		outputBin = "001100" + dec2bin(address);	
+		outputBin = "001100" + growToNumberOfDigits(dec2bin(address),10);
+		if(executeCommand){
+			if(getAkku() == 0){
+				setPC(address);
+			} else {
+				incPC();
+			}
+		}			
 	
 	} else 	if (keyword == "BNZD"){
 		var address=findAddress(x);
 		output = "BNZD to address " + address;
-		outputBin = "001010" + dec2bin(address);		
+		outputBin = "001010" + growToNumberOfDigits(dec2bin(address),10);
+		if(executeCommand){
+			if(getAkku() != 0){
+				setPC(address);
+			} else {
+				incPC();
+			}
+		}					
 	
 	} else 	if (keyword == "BCD"){
 		var address=findAddress(x);
 		output = "BCD to address " + address;
-		outputBin = "001110" + dec2bin(address);		
+		outputBin = "001110" + growToNumberOfDigits(dec2bin(address),10);
+		if(executeCommand){
+			if(getCarryFlag()){
+				setPC(address);
+			} else {
+				incPC();
+			}
+		}					
 	
 	} else 	if (keyword == "BD"){
 		var address=findAddress(x);
 		output = "BD to address " + address;
-		outputBin = "001000" + dec2bin(address);		
+		outputBin = "001000" + growToNumberOfDigits(dec2bin(address),10);
+		if(executeCommand){
+			setPC(address);
+		}					
 	
 	} else 	if (keyword == "STOP"){
 		output = "STOP";
 		outputBin = "0000000000000000";														
+		if(executeCommand){
+			endFlag = 1;
+			alert("END");
+			exit;
+		}	
 	
 	} else {
 		// if command is not known alert that
-		output = "unknown command";
+		output = "unknown command: " + x;
 		alert(output);
 	}
 	
@@ -474,21 +706,25 @@ function defineAction(x,executeCommand){
 		alert("Too many bits");
 	}
 	
+	if(executeCommand){
+		incSC();
+	}
+	
 	// return value
 	return outputBin;
 } 
 
 // splits out the the register number from an input field
 function findRegister(x){
-	var registerNumberFind = new RegExp('[1-3]', 'g');
-	var registerNumber = x.match(registerFind);
+	var registerNumberFind = new RegExp('[0-3]', '');
+	var registerNumber = x.match(registerNumberFind);
 	return registerNumber;
 }
 
 // splits out the address number from an input field
 function findAddress(x){
-	var addressFind = new RegExp('#[1-9]+', 'g');
-	var addressFind2 = new RegExp('[1-9]+', 'g');
+	var addressFind = new RegExp('#[0-9]+', 'g');
+	var addressFind2 = new RegExp('[0-9]+', 'g');
 	var address = x.match(addressFind);
 	address = address[0].match(addressFind2);
 	return address;
