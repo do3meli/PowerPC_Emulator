@@ -1,0 +1,13 @@
+#programmcodeDiv {
+					overflow: auto; 
+					max-height: 400px;
+				}
+#inputvariablesDiv { 
+					overflow: auto; 
+					max-height: 400px;
+					margin-top: 25px;
+				}
+#befehlsregister {
+					overflow: auto; 
+					height: 400px;
+				}

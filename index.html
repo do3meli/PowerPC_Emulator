@@ -3,147 +3,152 @@
 <head>
 <meta charset="UTF-8" />
 <link href="css/bootstrap.css" rel="stylesheet" />
+<link href="css/style.css" rel="stylesheet" />
+<script src="js/jquery-1.8.2.min.js"></script>
+<script src="js/ppc_emulator.js"></script>
 </head>
-<body>
-	<div class="span4">
+<body onload="init();">
+	<div class="span3">
 		<table class="table table-striped">
 			<tr>
 				<td>Programmzähler</td>
-				<td><input type="text" name="stepcounter" value="0" /></td>
+				<td><input type="text" class="input-small" id="stepcounter" value="" /></td>
 			</tr>
-			<tr>
-				<td colspan="2">Befehlsregister</td>
-			</tr>
-			<tr>	
-				<td>CLR Rnr</td>
-				<td>0 0 0 0 x x 1 0 1 < n o t   u ></td>
-			</tr>
-			<tr>	
-				<td>ADD Rnr</td>
-				<td>0 0 0 0 x x 1 1 1 < n o t   u ></td>
-			</tr>
-			<tr>	
-				<td>ADDD #Zahl</td>
-				<td>1 < - - - - Z a h l - - - - - ></td>
-			</tr>
-			<tr>	
-				<td>INC</td>
-				<td>0 0 0 0 0 0 0 1 <n o t   u s e d></n></td>
-			</tr>
-			<tr>	
-				<td>DEC</td>
-				<td>0 0 0 0 0 1 0 0 <n o t   u s e d></n></td>
-			</tr>
-			<tr>	
-				<td>LWDD Rnr , #Adr</td>
-				<td>0 1 0 - x x < A d r e s s e - ></td>
-			</tr>
-			<tr>	
-				<td>SWDD Rnr, #Adr</td>
-				<td>0 1 1 - x x < A d r e s s e - ></td>
-			</tr>
-			<tr>	
-				<td>SRA</td>
-				<td>0 0 0 0 0 1 0 1 <n o t   u s e d></td>
-			</tr>
-			<tr>	
-				<td>SLA</td>
-				<td>0 0 0 0 1 0 0 0 <n o t   u s e d></td>
-			</tr>
-			<tr>	
-				<td>SRL</td>
-				<td>0 0 0 0 0 1 0 0 1 <n o t   u s e d></td>
-			</tr>
-			<tr>	
-				<td>SLL</td>
-				<td>0 0 0 0 1 1 0 0 <n o t   u s e d></td>
-			</tr>
-			<tr>	
-				<td>AND Rnr</td>
-				<td>0 0 0 0 x x 1 0 0 < n o t   u ></td>
-			</tr>
-			<tr>	
-				<td>OR Rnr</td>
-				<td>0 0 0 0 x x 1 1 0 < n o t   u ></td>
-			</tr>
-			<tr>	
-				<td>NOT</td>
-				<td>0 0 0 0 0 0 0 0 1 < n o t   u ></td>
-			</tr>	
-			<tr>	
-				<td>BZ Rnr</td>
-				<td>0 0 0 1 x x 1 0 < n o t   u s ></td>
-			</tr>	
-			<tr>	
-				<td>BNZ Rnr</td>
-				<td>0 0 0 1 x x 0 1 < n o t   u s ></td>
-			</tr>
-			<tr>	
-				<td>BC Rnr</td>
-				<td>0 0 0 1 x x 1 1 < n o t   u s ></td>
-			</tr>
-			<tr>	
-				<td>B Rnr</td>
-				<td>0 0 0 1 x x 0 0 < n o t   u s ></td>
-			</tr>
-			<tr>	
-				<td>BZD #Adr</td>
-				<td>0 0 1 1 0 - < A d r e s s e - ></td>
-			</tr>	
-			<tr>	
-				<td>BNZD #Adr</td>
-				<td>0 0 1 0 1 - < A d r e s s e - ></td>
-			</tr>	
-			<tr>	
-				<td>BCD #Adr</td>
-				<td>0 0 1 1 1 - < A d r e s s e - ></td>
-			</tr>
-			<tr>	
-				<td>BD #Adr</td>
-				<td>0 0 1 0 0 - < A d r e s s e - ></td>
-			</tr>
-			<tr>	
-				<td>STOP</td>
-				<td>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</td>
-			</tr>																																																			
 		</table>
-	</div>
-	<div class="span4">
-		<table id="programmcode" class="table table-striped">
+		<div id="befehlsregister">
+		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Addr</th>
-					<th>Befehl</th>
-					<th>Maschinencode</th>
+					<th colspan="2"><b><a href="#" onclick="$('#befehlsregisterBody').toggle();">Befehlsregister</a></b></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="befehlsregisterBody" style="display: none;">	
 				<tr>	
-					<td>100</td>
-					<td><input type="text" value="" placeholder="Befehl" name="code100" /></td>
-					<td><input type="text" value="" placeholder="Maschinencode" name="code100Bin" /></td>
-				</tr>				
-			</tbody>																																																		
+					<td>CLR Rnr</td>
+					<td>0 0 0 0 x x 1 0 1 < n o t   u ></td>
+				</tr>
+				<tr>	
+					<td>ADD Rnr</td>
+					<td>0 0 0 0 x x 1 1 1 < n o t   u ></td>
+				</tr>
+				<tr>	
+					<td>ADDD #Zahl</td>
+					<td>1 < - - - - Z a h l - - - - - ></td>
+				</tr>
+				<tr>	
+					<td>INC</td>
+					<td>0 0 0 0 0 0 0 1 < n o t   u s e d ></td>
+				</tr>
+				<tr>	
+					<td>DEC</td>
+					<td>0 0 0 0 0 1 0 0 < n o t   u s e d ></td>
+				</tr>
+				<tr>	
+					<td>LWDD Rnr , #Adr</td>
+					<td>0 1 0 - x x < A d r e s s e - ></td>
+				</tr>
+				<tr>	
+					<td>SWDD Rnr, #Adr</td>
+					<td>0 1 1 - x x < A d r e s s e - ></td>
+				</tr>
+				<tr>	
+					<td>SRA</td>
+					<td>0 0 0 0 0 1 0 1 < n o t   u s e d ></td>
+				</tr>
+				<tr>	
+					<td>SLA</td>
+					<td>0 0 0 0 1 0 0 0 < n o t   u s e d ></td>
+				</tr>
+				<tr>	
+					<td>SRL</td>
+					<td>0 0 0 0 0 1 0 0 1 < n o t   u s e d ></td>
+				</tr>
+				<tr>	
+					<td>SLL</td>
+					<td>0 0 0 0 1 1 0 0 < n o t   u s e d ></td>
+				</tr>
+				<tr>	
+					<td>AND Rnr</td>
+					<td>0 0 0 0 x x 1 0 0 < n o t   u ></td>
+				</tr>
+				<tr>	
+					<td>OR Rnr</td>
+					<td>0 0 0 0 x x 1 1 0 < n o t   u ></td>
+				</tr>
+				<tr>	
+					<td>NOT</td>
+					<td>0 0 0 0 0 0 0 0 1 < n o t   u ></td>
+				</tr>	
+				<tr>	
+					<td>BZ Rnr</td>
+					<td>0 0 0 1 x x 1 0 < n o t   u s ></td>
+				</tr>	
+				<tr>	
+					<td>BNZ Rnr</td>
+					<td>0 0 0 1 x x 0 1 < n o t   u s ></td>
+				</tr>
+				<tr>	
+					<td>BC Rnr</td>
+					<td>0 0 0 1 x x 1 1 < n o t   u s ></td>
+				</tr>
+				<tr>	
+					<td>B Rnr</td>
+					<td>0 0 0 1 x x 0 0 < n o t   u s ></td>
+				</tr>
+				<tr>	
+					<td>BZD #Adr</td>
+					<td>0 0 1 1 0 - < A d r e s s e - ></td>
+				</tr>	
+				<tr>	
+					<td>BNZD #Adr</td>
+					<td>0 0 1 0 1 - < A d r e s s e - ></td>
+				</tr>	
+				<tr>	
+					<td>BCD #Adr</td>
+					<td>0 0 1 1 1 - < A d r e s s e - ></td>
+				</tr>
+				<tr>	
+					<td>BD #Adr</td>
+					<td>0 0 1 0 0 - < A d r e s s e - ></td>
+				</tr>
+				<tr>	
+					<td>STOP</td>
+					<td>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</td>
+				</tr>
+			</tbody>																																																				
 		</table>
-		<table id="inputvariables" class="table table-striped">
-			<thead>
-				<tr>
-					<th>Addr</th>
-					<th>Bin</th>
-					<th>Dez</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>	
-					<td>500</td>
-					<td><input type="text" value="" placeholder="Binär" name="input500Bin" /></td>
-					<td><input type="text" value="" placeholder="Dezimal" name="input500" /></td>
-				</tr>					
-			</tbody>																																																		
-		</table>		
+		</div>
 	</div>
 	<div class="span4">
-		<table id="registers" class="table table-striped">
+		<div id="programmcodeDiv">
+			<table class="table table-striped" id="programmcode">
+				<thead>
+					<tr>
+						<th>Addr</th>
+						<th>Befehl</th>
+						<th>Maschinencode</th>
+					</tr>
+				</thead>
+				<tbody>			
+				</tbody>																																																		
+			</table>
+		</div>
+		<div id="inputvariablesDiv">
+			<table class="table table-striped" id="inputvariables">
+				<thead>
+					<tr>
+						<th>Addr</th>
+						<th>Dez</th>
+						<th>Bin</th>
+					</tr>
+				</thead>
+				<tbody>				
+				</tbody>																																																		
+			</table>
+		</div>		
+	</div>
+	<div class="span4">
+		<table class="table table-striped" id="registers">
 			<thead>
 				<tr>
 					<th>Addr</th>
@@ -156,43 +161,43 @@
 				<tr>	
 					<td>00</td>
 					<td>Akku</td>
-					<td><input type="text" value="" placeholder="Binär" name="akkuBin" /></td>
-					<td><input type="text" value="" placeholder="Dezimal" name="akku" /></td>
+					<td><input type="text" value="" placeholder="Binär" disabled="true" id="akkuBin" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="akku" /></td>
 				</tr>
 				<tr>	
 					<td>01</td>
 					<td>Register 1</td>
-					<td><input type="text" value="" placeholder="Binär" name="reg1Bin" /></td>
-					<td><input type="text" value="" placeholder="Dezimal" name="reg1" /></td>
+					<td><input type="text" value="" placeholder="Binär" disabled="true" id="reg1Bin" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="reg1" /></td>
 				</tr>	
 				<tr>	
 					<td>10</td>
 					<td>Register 2</td>
-					<td><input type="text" value="" placeholder="Binär" name="reg2Bin" /></td>
-					<td><input type="text" value="" placeholder="Dezimal" name="reg2" /></td>
+					<td><input type="text" value="" placeholder="Binär" disabled="true" id="reg2Bin" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="reg2" /></td>
 				</tr>	
 				<tr>	
 					<td>11</td>
 					<td>Register 3</td>
-					<td><input type="text" value="" placeholder="Binär" name="reg3Bin" /></td>
-					<td><input type="text" value="" placeholder="Dezimal" name="reg3" /></td>
+					<td><input type="text" value="" placeholder="Binär" disabled="true" id="reg3Bin" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="reg3" /></td>
 				</tr>	
 				<tr>	
 					<td></td>
 					<td>Befehlszähler</td>
-					<td><input type="text" value="" placeholder="Binär" name="commandPointerBin" /></td>
-					<td><input type="text" value="" placeholder="Dezimal" name="commandPointer" /></td>
+					<td><input type="text" value="" placeholder="Binär" disabled="true" id="commandPointerBin" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="commandPointer" /></td>
 				</tr>					
 				<tr>	
 					<td></td>
 					<td>Carry-Flag</td>
-					<td><input type="checkbox" value="" name="carry" /></td>
+					<td><input type="checkbox" value="" disabled="true" name="carry" /></td>
 					<td></td>
 				</tr>																						
 			</tbody>																																																
 		</table>	
 		<div id="commandCentral">
-			<input type="button" name="step" value="Step" /><input type="button" name="slow" value="Slow" /><input type="button" name="fast" value="Fast" />
+			<input type="button" class="btn btn-primary" name="step" onclick="incSC(); incPC();" value="Step" />&nbsp;<input type="button" class="btn btn-success" name="slow" onclick="setPC(-17);" value="Slow" />&nbsp;<input type="button" class="btn btn-inverse" name="fast" onclick="$('#input520').focus();" value="Fast" />
 		</div>					
 	</div>		
 </body>
