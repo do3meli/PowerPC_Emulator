@@ -1,10 +1,9 @@
-var akku = "";
+var akku = 0;
 var reg = new Array();
-reg[1] = "";
-reg[2] = "";
-reg[3] = "";
-var programmCode = new Array();
-var inputValues = new Array();
+reg[1] = 0;
+reg[2] = 0;
+reg[3] = 0;
+var storage = new Array();
 var pc = 100; //programm counter
 var sc = 0; //step counter
 
@@ -151,6 +150,10 @@ function setReg(x,number){
 	setPCinGui(number);
 }
 
+function getReg(number){
+	retunr reg[number];
+}
+
 
 //akku
 function setAkkuinGui(){
@@ -161,6 +164,10 @@ function setAkkuinGui(){
 function setAkku(x){
 	akku = x;
 	setAkkuinGui();
+}
+
+function getAkku(){
+	return akku;
 }
 
 
@@ -176,7 +183,7 @@ function setInputValueinGui(value,field,number){
 function setInputValueBin(value,field){
 	var numberFind = new RegExp('[0-9]+', 'g');
 	var number = field.match(numberFind);
-	inputValues[number]=value;	
+	storage[number]=value;	
 	setInputValueinGui(value,field,number);
 }
 
@@ -197,7 +204,7 @@ function setProgrammCodeinGui(value,field,number){
 function setProgrammCodeBin(value,field){
 	var numberFind = new RegExp('[0-9]+', 'g');
 	var number = field.match(numberFind);
-	programmCode[number]=value;
+	storage[number]=value;
 	setProgrammCodeinGui(value,field,number);
 }
 
@@ -249,19 +256,36 @@ function twocomplement(x,digits) {
 
 //convert mnemonic code to machine code
 function mnemonic2machinecode(x){
+	var outputBin = defineAction(x,false);
+	return outputBin;
+}
+
+function runMnemonic(x){
+	defineAction(x,true);
+}
+
+function defineAction(x,executeCommand){	
 	var keywordFind = new RegExp('[a-zA-Z]+', 'g');
 	var keyword = x.match(keywordFind);
 	var output = "";
 	var outputBin = "";
 	//alert(keyword);
 	if (keyword == "CLR"){
-		var register=findRegister(x);
-		output = "CLR register: " + register;
-		outputBin = "0000" + dec2bin(register) + "1010000000";	
+		var registerNumber=findRegister(x);
+		output = "CLR register: " + registerNumber;
+		outputBin = "0000" + dec2bin(registerNumber) + "1010000000";
+		if(executeCommand){
+			//clear register
+			setReg(0,registerNumber);
+		}	
 	} else 	if (keyword == "ADD"){
-		var register=findRegister(x);
-		output = "ADD to register: " + register;
-		outputBin = "0000" + dec2bin(register) + "1110000000";	
+		var registerNumber=findRegister(x);
+		output = "ADD to register: " + registerNumber;
+		outputBin = "0000" + dec2bin(registerNumber) + "1110000000";
+		if(executeCommand){
+			//add register to akku
+			setAkku(getAkku() + getReg(registerNumber));
+		}				
 	} else 	if (keyword == "ADDD"){
 		var numberFind = new RegExp('[-]?[1-9]+', 'g');
 		var number = x.match(numberFind);
@@ -274,15 +298,15 @@ function mnemonic2machinecode(x){
 		output = "DEC";
 		outputBin = "0000010000000000";		
 	} else 	if (keyword == "LWDD"){
-		var register=findRegister(x);
+		var registerNumber=findRegister(x);
 		var address=findAddress(x)
-		output = "LWDD from register: " + register + " to address " + address;
-		outputBin = "0100" + dec2bin(register) + dec2bin(address);		
+		output = "LWDD from register: " + registerNumber + " to address " + address;
+		outputBin = "0100" + dec2bin(registerNumber) + dec2bin(address);		
 	} else 	if (keyword == "SWDD"){
-		var register=findRegister(x);
+		var registerNumber=findRegister(x);
 		var address=findAddress(x);
-		output = "SWDD to register: " + register + " from address " + address;
-		outputBin = "0110" + dec2bin(register) + dec2bin(address);				
+		output = "SWDD to register: " + registerNumber + " from address " + address;
+		outputBin = "0110" + dec2bin(registerNumber) + dec2bin(address);				
 	} else 	if (keyword == "SRA"){
 		output = "SRA";	
 		outputBin = "0000010100000000";	
@@ -296,32 +320,32 @@ function mnemonic2machinecode(x){
 		output = "SLL";
 		outputBin = "0000110000000000";			
 	} else 	if (keyword == "AND"){
-		var register=findRegister(x);
-		output = "AND register: " + register;
-		outputBin = "0000" + dec2bin(register) + "1000000000";		
+		var registerNumber=findRegister(x);
+		output = "AND register: " + registerNumber;
+		outputBin = "0000" + dec2bin(registerNumber) + "1000000000";		
 	} else 	if (keyword == "OR"){
-		var register=findRegister(x);
-		output = "OR register: " + register;
-		outputBin = "0000" + dec2bin(register) + "1100000000";	
+		var registerNumber=findRegister(x);
+		output = "OR register: " + registerNumber;
+		outputBin = "0000" + dec2bin(registerNumber) + "1100000000";	
 	} else 	if (keyword == "NOT"){
 		output = "NOT";
 		outputBin = "0000000010000000";		
 	} else 	if (keyword == "BZ"){
-		var register=findRegister(x);
-		output = "BZ register: " + register;
-		outputBin = "0001" + dec2bin(register) + "1000000000";	
+		var registerNumber=findRegister(x);
+		output = "BZ register: " + registerNumber;
+		outputBin = "0001" + dec2bin(registerNumber) + "1000000000";	
 	} else 	if (keyword == "BNZ"){
-		var register=findRegister(x);
-		output = "BNZ register: " + register;
-		outputBin = "0001" + dec2bin(register) + "0100000000";
+		var registerNumber=findRegister(x);
+		output = "BNZ register: " + registerNumber;
+		outputBin = "0001" + dec2bin(registerNumber) + "0100000000";
 	} else 	if (keyword == "BC"){
-		var register=findRegister(x);
-		output = "BC register: " + register;
-		outputBin = "0001" + dec2bin(register) + "1100000000";	
+		var registerNumber=findRegister(x);
+		output = "BC register: " + registerNumber;
+		outputBin = "0001" + dec2bin(registerNumber) + "1100000000";	
 	} else 	if (keyword == "B"){
-		var register=findRegister(x);
-		output = "B register: " + register;
-		outputBin = "0001" + dec2bin(register) + "0000000000";	
+		var registerNumber=findRegister(x);
+		output = "B register: " + registerNumber;
+		outputBin = "0001" + dec2bin(registerNumber) + "0000000000";	
 	} else 	if (keyword == "BZD"){
 		var address=findAddress(x);
 		output = "BZD to address " + address;
@@ -357,9 +381,9 @@ function mnemonic2machinecode(x){
 } 
 
 function findRegister(x){
-	var registerFind = new RegExp('[1-3]', 'g');
-	var register = x.match(registerFind);
-	return register;
+	var registerNumberFind = new RegExp('[1-3]', 'g');
+	var registerNumber = x.match(registerFind);
+	return registerNumber;
 }
 
 function findAddress(x){
