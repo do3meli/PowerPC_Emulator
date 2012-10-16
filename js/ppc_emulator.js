@@ -334,8 +334,12 @@ function runMnemonic(x){
 
 // THE function where all commands are 
 function defineAction(x,executeCommand){	
+	
+	// sorts out the cmd from the input field
 	var keywordFind = new RegExp('[a-zA-Z]+', 'g');
 	var keyword = x.match(keywordFind);
+	
+	// set output empty
 	var output = "";
 	var outputBin = "";
 
@@ -474,12 +478,14 @@ function defineAction(x,executeCommand){
 	return outputBin;
 } 
 
+// splits out the the register number from an input field
 function findRegister(x){
 	var registerNumberFind = new RegExp('[1-3]', 'g');
 	var registerNumber = x.match(registerFind);
 	return registerNumber;
 }
 
+// splits out the address number from an input field
 function findAddress(x){
 	var addressFind = new RegExp('#[1-9]+', 'g');
 	var addressFind2 = new RegExp('[1-9]+', 'g');
