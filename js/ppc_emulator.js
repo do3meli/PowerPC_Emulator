@@ -29,71 +29,53 @@ var endFlag = 0;
 
 // this function is getting called on page load event
 // it is setting up the page layout and updates the GUI with needful information
-function init(){
+function init(tableCreate){
+	tableCreate = typeof tableCreate !== 'undefined' ? tableCreate : true;
 	
-	setPCinGui();		// updates programm counter field in GUI
-	setSCinGui();		// updates step counter field in GUI
+	if (tableCreate){
 	
-	// get emtpy table for programmcode
-	var table = document.getElementById('programmcode').getElementsByTagName('tbody')[0];
-	
-	// now create all fields for programmcode from storage 100 - 499
-	for(var i = 100; i <= 499; i++){
+		// get emtpy table for programmcode
+		var table = document.getElementById('programmcode').getElementsByTagName('tbody')[0];
 		
-		var tr = table.insertRow(table.rows.length);	
-		
-		// create new input object for code
-		var code = document.createElement('input');
-			code.type = "text";
-			code.value = "";
-			code.setAttribute("class", "input-small");
-			code.placeholder = "Befehl";
-			code.setAttribute('onChange', "updateProgrammCode(event);" );
-			code.id = "code" + i;
+		// now create all fields for programmcode from storage 100 - 499
+		for(var i = 100; i <= 499; i++){
 			
-		// create new input object for binary code
-		var codeBin = document.createElement('input');
-			codeBin.type = "text";
-			codeBin.value = "";
-			codeBin.setAttribute("class", "input-medium");
-			codeBin.placeholder = "Maschinencode";
-			codeBin.id = "code" + i + "Bin";
-			codeBin.disabled = true;	
-		
-		// now add newly created object
-		var td = tr.insertCell(0);
-		td.appendChild(codeBin);
-		
-		var td = tr.insertCell(0);
-		td.appendChild(code);
-		
-		var td = tr.insertCell(0);
-		td.innerHTML = i;
-		
-		// increase the counter
-		i++;
-		
-		var tr = table.insertRow(table.rows.length);	
-		
-		// create a second new binary field
-		var codeBin = document.createElement('input');
-			codeBin.type = "text";
-			codeBin.value = "";
-			codeBin.setAttribute("class", "input-medium");
-			codeBin.placeholder = "Maschinencode";
-			codeBin.id = "code" + i + "Bin";
-			codeBin.disabled = true;		
-		
-		// now add second newly create object and write some data to GUI
-		var td = tr.insertCell(0);
-		td.appendChild(codeBin);
-		
-		var td = tr.insertCell(0);
-		
-		var td = tr.insertCell(0);
-		td.innerHTML = i;				
+			var tr = table.insertRow(table.rows.length);
+				tr.id = "row" + i;	
+			
+			// create new input object for code
+			if (i % 2 == 0){
+				var code = document.createElement('input');
+					code.type = "text";
+					code.value = "";
+					code.setAttribute("class", "input-small");
+					code.placeholder = "Befehl";
+					code.setAttribute('onChange', "updateProgrammCode(event);" );
+					code.id = "code" + i;
+			}
 				
-	}
+			// create new input object for binary code
+			var codeBin = document.createElement('input');
+				codeBin.type = "text";
+				codeBin.value = "";
+				codeBin.setAttribute("class", "input-medium");
+				codeBin.placeholder = "Maschinencode";
+				codeBin.id = "code" + i + "Bin";
+				codeBin.disabled = true;	
+			
+			// now add newly created object
+			var td = tr.insertCell(0);
+			td.appendChild(codeBin);
+			
+			var td = tr.insertCell(0);
+			if (i % 2 == 0){
+				td.appendChild(code);
+			}
+			
+			var td = tr.insertCell(0);
+			td.innerHTML = i;
+		}
+	}//if tablecreate
 	
 	// now do the same for the input variable
 	// get the empty table
@@ -102,16 +84,19 @@ function init(){
 	// loop over the input value storage addresses to create objects
 	for(var i = 500; i <= 529; i++){	
 		
-		var tr = table.insertRow(table.rows.length);	
-		
-		// create new input object decimal
-		var input = document.createElement('input');
-			input.type = "text";
-			input.value = "";
-			input.setAttribute("class", "input-small");
-			input.placeholder = "Dezimal";
-			input.setAttribute('onChange', "updateInputValue(event);" );
-			input.id = "input" + i;
+		var tr = table.insertRow(table.rows.length);
+			tr.id = "row" + i;
+					
+		if (i % 2 == 0){
+			// create new input object decimal
+			var input = document.createElement('input');
+				input.type = "text";
+				input.value = "";
+				input.setAttribute("class", "input-small");
+				input.placeholder = "Dezimal";
+				input.setAttribute('onChange', "updateInputValue(event);" );
+				input.id = "input" + i;
+		}
 		
 		// create new input objcect binary
 		var inputBin = document.createElement('input');
@@ -127,7 +112,9 @@ function init(){
 		td.appendChild(inputBin);
 		
 		var td = tr.insertCell(0);
-		td.appendChild(input);
+		if (i % 2 == 0){
+			td.appendChild(input);
+		}
 		
 		var td = tr.insertCell(0);
 		td.innerHTML = i;	
@@ -155,9 +142,22 @@ function init(){
 		var td = tr.insertCell(0);
 		td.innerHTML = i;					
 	}	
+	
+	setPC(100);		// updates programm counter field in GUI
+	sc = 0;
+	setSCinGui();		// updates step counter field in GUI
+	
+	setAkku(0);
+	setReg(0,1);
+	setReg(0,2);
+	setReg(0,3);
+	setCarryFlag(false);
+	endFlag = 0;
 }
 
-function loadTest(){
+function loadTest(){	
+	init(false);
+	
 	setStorage("LWDD 0 #504", 100);
 	setStorage("SLA", 102);
 	setStorage("BCD #124", 104);
@@ -179,6 +179,8 @@ function loadTest(){
 }
 
 function loadTestFail(){
+	init(false);
+	
 	setStorage("LWDD 0 #504", 100);
 	setStorage("SLA", 102);
 	setStorage("BCD #124", 104);
@@ -204,9 +206,7 @@ function stepForward(){
 }
 
 function slow(){
-	while(endFlag == 0){
-		var timer = setTimeout(runMnemonic(getStorage(getPC())),30000);
-	}	
+	var timer = setInterval(function() { if (endFlag == 0) {runMnemonic(getStorage(getPC()));} else {clearInterval(timer)} }, 1000)
 }
 
 function fast(){
@@ -217,6 +217,15 @@ function fast(){
 
 function focusOn(x){
 	$("#code" + x).focus();
+	$("#row" + x).addClass("info");
+	var secondNumber = x + 1;
+	$("#row" + secondNumber).addClass("info");
+}
+
+function removeFocus(x){
+	$("#row" + x).removeClass("info");
+	var secondNumber = x + 1;
+	$("#row" + secondNumber).removeClass("info");
 }
 
 // this function updates the commandPointer field in GUI
@@ -224,17 +233,19 @@ function focusOn(x){
 // the value from the pc variable is taken for the update
 function setPCinGui(){
 	$("#commandPointer").val(pc);
-	$("#commandPointerBin").val(twocomplement(pc,16));
+	$("#commandPointerBin").val(dec2twocomplement(pc,16));
 }
 
 // increases the programm counter variable by 1
 function incPC(){
+	removeFocus(pc);
 	setPC(pc + 2);
 }
 
 // This is the setter function for the programm counter
 // once the variable has been set it automatically updates the GUI by calling setPCinGui method
 function setPC(x){
+	removeFocus(pc);
 	pc = x;
 	setPCinGui();
 	focusOn(x);
@@ -263,7 +274,7 @@ function incSC(){
 // the value is taken from global reg array
 function setReginGui(number){
 	$("#reg" + number).val(reg[number]);
-	$("#reg" + number + "Bin").val(twocomplement(reg[number],16));
+	$("#reg" + number + "Bin").val(dec2twocomplement(reg[number],16));
 }
 
 // sets the Register with a given number to a value x
@@ -292,7 +303,7 @@ function getReg(number){
 // both values (decimal and binary) are updated
 function setAkkuinGui(){
 	$("#akku").val(akku);
-	$("#akkuBin").val(twocomplement(akku,16));
+	$("#akkuBin").val(dec2twocomplement(akku,16));
 }
 
 // sets the accu to a given value x
@@ -312,7 +323,11 @@ function getAkku(){
 
 function setCarryFlaginGui(){
 	$("#carryFlag").attr("checked", carryFlag);	
-	alert("CarryFlag: " + carryFlag);
+	if(carryFlag){
+		$("#carryFlagRow").addClass("error");		
+	} else {
+		$("#carryFlagRow").removeClass("error");
+	}
 }
 
 // sets the accu to a given value x
@@ -349,7 +364,7 @@ function getStorage(number){
 
 // generates a twocomplement of the input value and stores it in corresponding fields in GUI
 function setInputValueinGui(value,field,number){
-	var twoComplement = twocomplement(value,16);
+	var twoComplement = dec2twocomplement(value,16);
 	$("#" + field + "Bin").val(twoComplement.substring(0,8));
 	var newNumber = parseInt(number) + 1;
 	var secondField = field.replace(number,newNumber);
@@ -401,20 +416,24 @@ function dec2bin(input) {
 	return parseInt(input).toString(2);
 }
 
+function bin2dec(input) {
+	return parseInt(input, 2);
+}
+
 // this function converts a decimal number into two's complement
-function twocomplement(x,digits) {
+function dec2twocomplement(x,digits) {
 	
 	// check if the given number is negative
 	if(x < 0){
 		// normal convert from dec2bin
 		var string = x.toString();
-		var dec = growToNumberOfDigits(dec2bin(string.substring(1)),digits);
+		var bin = growToNumberOfDigits(dec2bin(string.substring(1)),digits);
 		var invertstr = "";
 	
 		// invert the string
-		for (i=0; i<dec.length; i++){
+		for (i=0; i<bin.length; i++){
 			
-			if(parseInt(dec.substring(i,i+1)) == 1){
+			if(parseInt(bin.substring(i,i+1)) == 1){
 				invertstr = invertstr + "0";	
 			}else{
 				invertstr = invertstr + "1";
@@ -433,6 +452,35 @@ function twocomplement(x,digits) {
 	}else{
 		// if positive number do normal dec2bin convert
 		return growToNumberOfDigits(dec2bin(x),digits);
+	}
+}
+
+// this function converts a two's complement number into dec
+function twocomplement2dec(bin) {
+	
+	// check if the given number is negative
+	var firstDig = bin.toString().substring(0,1);
+	if(firstDig == 1){
+		
+		// sub in decimal system 1 and convert back to binary
+		var tmp = parseInt(bin,2) - 1;
+		tmp = tmp.toString(2);
+		
+		// invert the string
+		var invertstr = "";
+		for (i=0; i<tmp.length; i++){
+			
+			if(parseInt(tmp.substring(i,i+1)) == 1){
+				invertstr = invertstr + "0";	
+			}else{
+				invertstr = invertstr + "1";
+			}
+		}		
+		return "-" + bin2dec(invertstr);		
+		
+	}else{
+		// if positive number do normal dec2bin convert
+		return bin2dec(bin);
 	}
 }
 
@@ -483,7 +531,7 @@ function defineAction(x,executeCommand){
 		var numberFind = new RegExp('[-]?[1-9]+', 'g');
 		var number = x.match(numberFind);
 		output = "ADDD " + number;
-		outputBin = "1" + twocomplement(number,15);		
+		outputBin = "1" + dec2twocomplement(number,15);		
 		if(executeCommand){
 			//add number to akku
 			setAkku(getAkku() + number);
@@ -535,8 +583,16 @@ function defineAction(x,executeCommand){
 		outputBin = "0000010100000000";
 		if(executeCommand){
 			//akku durch 2
-			alert('Not yet implemented');
-			setAkku(getAkku() / 2);
+			var bin = dec2twocomplement(getAkku(),16);
+			var lbs = bin.substring(bin.length - 1);
+			var msb = bin.substring(0,1);
+			var newBin = msb + bin.substring(0,bin.length - 1);
+			if (lbs == 0){
+				setCarryFlag(false);
+			} else {
+				setCarryFlag(true);
+			}
+			setAkku(twocomplement2dec(newBin));
 			incPC();
 		}			
 	
@@ -545,8 +601,16 @@ function defineAction(x,executeCommand){
 		outputBin = "0000100000000000";
 		if(executeCommand){
 			//akku mal 2
-			alert('Not yet implemented');
-			setAkku(getAkku() * 2);
+			var bin = dec2twocomplement(getAkku(),16);
+			var msb = bin.substring(0,1);
+			var second = bin.substring(1,2);
+			var newBin = msb + bin.substring(2) + "0";
+			if (second == 0){
+				setCarryFlag(false);
+			} else {
+				setCarryFlag(true);
+			}
+			setAkku(twocomplement2dec(newBin));
 			incPC();
 		}					
 	
@@ -555,8 +619,16 @@ function defineAction(x,executeCommand){
 		outputBin = "0000100100000000";
 		if(executeCommand){
 			//akku durch 2
-			alert('Not yet implemented');
-			setAkku(getAkku() / 2);
+			var bin = dec2twocomplement(getAkku(),16);
+			var lbs = bin.substring(bin.length - 1);
+			var msb = "0";
+			var newBin = msb + bin.substring(0,bin.length - 1);
+			if (lbs == 0){
+				setCarryFlag(false);
+			} else {
+				setCarryFlag(true);
+			}
+			setAkku(twocomplement2dec(newBin));
 			incPC();
 		}				
 	
@@ -565,8 +637,15 @@ function defineAction(x,executeCommand){
 		outputBin = "0000110000000000";
 		if(executeCommand){
 			//akku mal 2
-			alert('Not yet implemented');
-			setAkku(getAkku() * 2);
+			var bin = dec2twocomplement(getAkku(),16);
+			var msb = bin.substring(0,1);
+			var newBin = bin.substring(1) + "0";
+			if (msb == 0){
+				setCarryFlag(false);
+			} else {
+				setCarryFlag(true);
+			}
+			setAkku(twocomplement2dec(newBin));
 			incPC();
 		}						
 	
@@ -575,7 +654,17 @@ function defineAction(x,executeCommand){
 		output = "AND register: " + registerNumber;
 		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1000000000";
 		if(executeCommand){
-			alert('Not yet implemented');
+			var akkuBin = dec2twocomplement(getAkku(),16);
+			var regBin = dec2twocomplement(getReg(registerNumber));
+			var newAkkuBin = "";
+			for(var i = 0; i < akkuBin.length; i++){
+				if (akkuBin.substring(i, i + 1) == regBin.substring(i, i + 1)){
+					newAkkuBin += "1";
+				} else {
+					newAkkuBin += "0";
+				}
+			}
+			setAkku(twocomplement2dec(newAkkuBin));
 			incPC();
 		}					
 	
@@ -584,7 +673,17 @@ function defineAction(x,executeCommand){
 		output = "OR register: " + registerNumber;
 		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1100000000";
 		if(executeCommand){
-			alert('Not yet implemented');
+			var akkuBin = dec2twocomplement(getAkku(),16);
+			var regBin = dec2twocomplement(getReg(registerNumber));
+			var newAkkuBin = "";
+			for(var i = 0; i < akkuBin.length; i++){
+				if (akkuBin.substring(i, i + 1) == 1 || regBin.substring(i, i + 1) == 1){
+					newAkkuBin += "1";
+				} else {
+					newAkkuBin += "0";
+				}
+			}
+			setAkku(twocomplement2dec(newAkkuBin));
 			incPC();
 		}					
 	
@@ -592,7 +691,16 @@ function defineAction(x,executeCommand){
 		output = "NOT";
 		outputBin = "0000000010000000";
 		if(executeCommand){
-			alert('Not yet implemented');
+			var akkuBin = dec2twocomplement(getAkku(),16);
+			var newAkkuBin = "";
+			for(var i = 0; i < akkuBin.length; i++){
+				if (akkuBin.substring(i, i + 1) == 0){
+					newAkkuBin += "1";
+				} else {
+					newAkkuBin += "0";
+				}
+			}
+			setAkku(twocomplement2dec(newAkkuBin));
 			incPC();
 		}						
 	
