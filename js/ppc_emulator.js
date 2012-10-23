@@ -246,7 +246,7 @@ function incPC(){
 // once the variable has been set it automatically updates the GUI by calling setPCinGui method
 function setPC(x){
 	removeFocus(pc);
-	pc = x;
+	pc = parseInt(x);
 	setPCinGui();
 	focusOn(x);
 }
@@ -281,9 +281,9 @@ function setReginGui(number){
 // after the set the gui gets updated automatically via setPCinGUI function
 function setReg(x,number){
 	if(number == 0){
-		setAkku(x);
+		setAkku(parseInt(x));
 	} else {
-		reg[number] = x;
+		reg[number] = parseInt(x);
 		setReginGui(number);
 	}
 }
@@ -309,8 +309,8 @@ function setAkkuinGui(){
 // sets the accu to a given value x
 // and updates the GUI
 function setAkku(x){
-	akku = x;
-	if(x >= max || x <= min){
+	akku = parseInt(x);
+	if(akku >= max || akku <= min){
 		setCarryFlag(true);
 	}
 	setAkkuinGui();
