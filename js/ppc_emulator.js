@@ -381,9 +381,7 @@ function setInputValueBin(value,field){
 	var akkuFind = new RegExp('akku', 'g');
 	var regFind = new RegExp('reg', 'g');
 	var commandPointerFind = new RegExp('commandPointer', 'g');
-	alert(field);
 	if(inputOrdCodeFind.test(field)){
-		alert("Test");
 		setStorage(value,number);
 	} else if (akkuFind.test(field)) {
 		setAkku(value);
