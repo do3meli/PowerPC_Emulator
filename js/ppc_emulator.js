@@ -216,6 +216,8 @@ function fast(){
 }
 
 function focusOn(x){
+	//var fieldOffset = $("#row" + x).offset().top;
+	//$("#programmcodeDiv").animate({scrollTop: fieldOffset})
 	$("#code" + x).focus();
 	$("#row" + x).addClass("info");
 	var secondNumber = x + 1;
@@ -375,7 +377,21 @@ function setInputValueinGui(value,field,number){
 function setInputValueBin(value,field){
 	var numberFind = new RegExp('[0-9]+', 'g');
 	var number = field.match(numberFind);
-	setStorage(value,number);	
+	var inputOrdCodeFind = new RegExp('input', 'g');
+	var akkuFind = new RegExp('akku', 'g');
+	var regFind = new RegExp('reg', 'g');
+	var commandPointerFind = new RegExp('commandPointer', 'g');
+	alert(field);
+	if(inputOrdCodeFind.test(field)){
+		alert("Test");
+		setStorage(value,number);
+	} else if (akkuFind.test(field)) {
+		setAkku(value);
+	} else if (akkuFind.test(field)) {
+		setReg(value,number);
+	} else if (commandPointerFind.test(field)) {
+		setPC(value);
+	}
 }
 
 // this function is getting called when an input value has been changed in GUI

@@ -15,13 +15,9 @@
 				<td><input type="text" class="input-small" id="stepcounter" value="" /></td>
 			</tr>
 		</table>
+		<b><a href="#" onclick="$('#befehlsregisterBody').toggle();">Befehlsregister</a></b>
 		<div id="befehlsregister">
 		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th colspan="2"><b><a href="#" onclick="$('#befehlsregisterBody').toggle();">Befehlsregister</a></b></th>
-				</tr>
-			</thead>
 			<tbody id="befehlsregisterBody" style="display: none;">	
 				<tr>	
 					<td>CLR Rnr</td>
@@ -162,31 +158,31 @@
 					<td>00</td>
 					<td>Akku</td>
 					<td><input type="text" value="" placeholder="Binär" disabled="true" id="akkuBin" /></td>
-					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="akku" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" onchange="updateInputValue(event);" id="akku" /></td>
 				</tr>
 				<tr>	
 					<td>01</td>
 					<td>Register 1</td>
 					<td><input type="text" value="" placeholder="Binär" disabled="true" id="reg1Bin" /></td>
-					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="reg1" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" onchange="updateInputValue(event);" id="reg1" /></td>
 				</tr>	
 				<tr>	
 					<td>10</td>
 					<td>Register 2</td>
 					<td><input type="text" value="" placeholder="Binär" disabled="true" id="reg2Bin" /></td>
-					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="reg2" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" onchange="updateInputValue(event);" id="reg2" /></td>
 				</tr>	
 				<tr>	
 					<td>11</td>
 					<td>Register 3</td>
 					<td><input type="text" value="" placeholder="Binär" disabled="true" id="reg3Bin" /></td>
-					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="reg3" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" onchange="updateInputValue(event);" id="reg3" /></td>
 				</tr>	
 				<tr>	
 					<td></td>
 					<td>Befehlszähler</td>
 					<td><input type="text" value="" placeholder="Binär" disabled="true" id="commandPointerBin" /></td>
-					<td><input type="text" class="input-small" value="" placeholder="Dezimal" id="commandPointer" /></td>
+					<td><input type="text" class="input-small" value="" placeholder="Dezimal" onchange="updateInputValue(event);" id="commandPointer" /></td>
 				</tr>					
 				<tr id="carryFlagRow">	
 					<td></td>
