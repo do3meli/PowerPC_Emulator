@@ -5,7 +5,7 @@
 <link href="css/bootstrap.css" rel="stylesheet" />
 <link href="css/style.css" rel="stylesheet" />
 <script src="js/jquery-1.8.2.min.js"></script>
-<script src="js/ppc_emulator.min.js"></script>
+<script src="js/ppc_emulator.js"></script>
 </head>
 <body onload="init();">
 	<div class="span3">
@@ -199,7 +199,9 @@
 		</div><br>	
 		<div id="programmes">
 			<input type="button" class="btn btn-primary" onclick="loadTest();" value="Load Test Programm" />&nbsp;
-			<input type="button" class="btn btn-danger" onclick="loadTestFail();" value="Load Test Fail Programm" />&nbsp;
+			<input type="button" class="btn btn-danger" onclick="loadTestFail();" value="Load Fail Programm" />&nbsp;
+			<br><br>
+			<input type="button" class="btn btn-info" onclick="loadMultiplication();" value="Load Multiplication Programm" />
 		</div>							
 	</div>		
 </body>
