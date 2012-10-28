@@ -201,6 +201,15 @@ function loadTestFail(){
 	setStorage(16, 504);	
 }
 
+
+function loadMultiplication(){
+	init(false);
+
+	
+}
+
+
+
 function stepForward(){
 	runMnemonic(getStorage(getPC()));
 }
