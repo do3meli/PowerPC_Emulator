@@ -655,10 +655,16 @@ function defineAction(x,executeCommand){
 		var registerNumber=findRegister(x);
 		output = "ADD to register: " + registerNumber;
 		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1110000000";
+		var mbs = outputBin.substring(0,1);
 		if(executeCommand){
 			//add register to akku
 			setAkku(getAkku() + getReg(registerNumber));
 			incPC();
+			if( mbs == 0){
+				setCarryFlag(false);
+			}else{
+				setCarryFlag(true);
+			}
 		}				
 	
 	} else 	if (keyword == "ADDD"){
