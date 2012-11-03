@@ -209,17 +209,17 @@ function multiplication (){
 	init(false);
 	
 	setResultField(504,1);
-	setResultField(506,2);	
+	setResultField(506,2);
+	setResult(dec2twocomplement(0,32));	
 		
-	var number1ToPositiv=140;
-	var number2ToPositiv=176;	
-	var multiplicationFlag=232;
-	var decNegativFlag=266;
-	var setSecondPartAdd=276;
-	var interimResult=300;
-	//interimResultSecond=325
-	var secondInterimResultOverflow=350;
-	var programmEndFlag = 400;
+	var number1ToPositiv=150;
+	var number2ToPositiv=180;	
+	var multiplicationFlag=240;
+	var decNegativFlag=270;
+	var setSecondPartAdd=300;
+	var interimResult=350;
+	var secondInterimResultOverflow=400;
+	var programmEndFlag = 450;
 	var programmEndEndFlag = 480;
 	
 	var codeCounter=100;
@@ -573,7 +573,8 @@ function multiplication (){
 	
 	//eingaben
 	setStorage(1000, 500);
-	setStorage(25000, 502);
+	//setStorage(25000, 502);
+	setStorage(24576,502);
 	//resultate
 	setStorage(0, 504);
 	setStorage(0, 506);	
@@ -677,16 +678,20 @@ function getResultField(number){
 }
 
 function setResultinGui(){
-	var result = 0;
+	var resultBin = 0;
 	if (getResultField(1) > 500 && getResultField(1) > 500){
-		result = dec2twocomplement(getStorage(getResultField(1)),16) + "" + dec2twocomplement(getStorage(getResultField(2)),16);
+		resultBin = dec2twocomplement(getStorage(getResultField(1)),16) + "" + dec2twocomplement(getStorage(getResultField(2)),16);
 	} else if (getResultField(1) > 500){
-		result = dec2twocomplement(getStorage(getResultField(1)),16)
+		resultBin = dec2twocomplement(getStorage(getResultField(1)),16)
 	} else if (getResultField(2) > 500){
-		result = dec2twocomplement(getStorage(getResultField(2)),16)
+		resultBin = dec2twocomplement(getStorage(getResultField(2)),16)
 	}
-	$("#result").val(twocomplement2dec(result));
-	$("#resultBin").val(result);
+	setResult(resultBin);
+}
+
+function setResult(resultBin){
+	$("#result").val(twocomplement2dec(resultBin));
+	$("#resultBin").val(resultBin);	
 }
 
 // this functions updates the GUI 
@@ -730,7 +735,7 @@ function setAkkuinGui(){
 // and updates the GUI
 function setAkku(x){
 	akku = parseInt(x);
-	if(akku >= max || akku <= min){
+	if(akku > max || akku < min){
 		setCarryFlag(true);
 	}
 	setAkkuinGui();
@@ -896,21 +901,22 @@ function twocomplement2dec(bin) {
 	// check if the given number is negative
 	var firstDig = bin.toString().substring(0,1);
 	if(firstDig == 1){
-		
 		// sub in decimal system 1 and convert back to binary
 		var tmp = parseInt(bin,2) - 1;
-		tmp = tmp.toString(2);
+		tmp = dec2twocomplement(tmp,bin.length);
 		
 		// invert the string
 		var invertstr = "";
+		var oneCounter = 0;
 		for (i=0; i<tmp.length; i++){
 			
 			if(parseInt(tmp.substring(i,i+1)) == 1){
-				invertstr = invertstr + "0";	
+				invertstr = invertstr + "0";
+				oneCounter++;	
 			}else{
 				invertstr = invertstr + "1";
 			}
-		}		
+		}	
 		return "-" + bin2dec(invertstr);		
 		
 	}else{
@@ -1123,6 +1129,8 @@ function defineAction(x,executeCommand){
 			//akku mal 2
 			var bin = dec2twocomplement(getAkku(),16);
 			var msb = bin.substring(0,1);
+			var subString = bin.substring(1);
+			
 			var newBin = bin.substring(1) + "0";
 			if (msb == 0){
 				setCarryFlag(false);
