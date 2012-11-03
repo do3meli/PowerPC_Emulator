@@ -15,6 +15,9 @@ var reg = new Array();				// register array
 reg[1] = 0;							// register nr 1
 reg[2] = 0;							// register nr 2
 reg[3] = 0;							// register nr 3
+var resultFiled = new Array();
+resultFiled[1] = 0;
+resultFiled[2] = 0;	
 var storage = new Array();			// storage array
 var pc = 100; 						// programm counter
 var sc = 0; 						// step counter
@@ -22,6 +25,7 @@ var carryFlag = false;
 var max = Math.pow(2, 15) - 1;
 var min = 0 - Math.pow(2, 15);
 var endFlag = 0;
+var timer;
 
 //*************************
 // HELP AND GUI FUNCTIONS
@@ -201,12 +205,400 @@ function loadTestFail(){
 	setStorage(16, 504);	
 }
 
+function multiplication (){
+	init(false);
+	
+	setResultField(504,1);
+	setResultField(506,2);	
+		
+	var number1ToPositiv=140;
+	var number2ToPositiv=176;	
+	var multiplicationFlag=232;
+	var decNegativFlag=266;
+	var setSecondPartAdd=276;
+	var interimResult=300;
+	//interimResultSecond=325
+	var secondInterimResultOverflow=350;
+	var programmEndFlag = 400;
+	var programmEndEndFlag = 480;
+	
+	var codeCounter=100;
+	//lade zahl1
+	setStorage("LWDD 0 #500", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//wenn zahl1 0, ist mult fertig
+	setStorage("BZD #" + programmEndEndFlag, codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//schiebe nach links um zu testen, ob zahl negativ
+	setStorage("SLL", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//wenn negativ springe zu markAsNegativ
+	setStorage("BCD #" + number1ToPositiv, codeCounter);
+	codeCounter  = codeCounter + 2;
+	//schiebe wieder zurück
+	setStorage("SRL", codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//save akku in address 514
+	setStorage("SWDD 0 #514", codeCounter);
+	codeCounter  = codeCounter + 2;		
+
+	//lade zahl2
+	checkNumber2=codeCounter;
+	setStorage("LWDD 0 #502", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//wenn zahl2 0, ist mult fertig
+	setStorage("BZD #" + programmEndEndFlag, codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//schiebe nach links um zu testen, ob zahl negativ
+	setStorage("SLL", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//wenn negativ springe zu markAsNegativ
+	setStorage("BCD #" + number2ToPositiv, codeCounter);
+	codeCounter  = codeCounter + 2;			
+	//schiebe wieder zurück
+	setStorage("SRL", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 510
+	setStorage("SWDD 0 #510", codeCounter);
+	codeCounter  = codeCounter + 2;			
+	
+	/*
+	 * Increase step counter
+	 */
+	shiftFlag=codeCounter;		
+	//lade address 508 in akku
+	setStorage("LWDD 0 #508", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//addiere 1 zu akku
+	setStorage("INC", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 508
+	setStorage("SWDD 0 #508", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	
+	//lade Zahl 2
+	setStorage("LWDD 0 #510", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//wenn zweite Zahl 0 dann ist das Programm zu ende
+	setStorage("BZD #" + programmEndFlag, codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//shift zahl 2 nach rechts
+	setStorage("SRA", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 510
+	setStorage("SWDD 0 #510", codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//wenn carry flag gesetzt dann geh zur Multiplikation
+	setStorage("BCD #" + multiplicationFlag, codeCounter);
+	codeCounter  = codeCounter + 2;
+	//wenn carry flag nicht gesetzt dann shifte weiter
+	setStorage("BD #" + shiftFlag, codeCounter);
+	codeCounter  = codeCounter + 2;	
+
+	/*
+	 * number1ToPositiv
+	 */
+	//clr reg 3 and reset carry flag
+	setStorage("CLR 3", number1ToPositiv);
+	codeCounter=number1ToPositiv;
+	codeCounter  = codeCounter + 2;		
+	//lade zahl1
+	setStorage("LWDD 0 #500", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//-1
+	setStorage("DEC", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//negiere
+	setStorage("NOT", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//save akku in address 514
+	setStorage("SWDD 0 #514", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//lade negativFlag
+	setStorage("LWDD 0 #516", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//-1
+	setStorage("INC", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 514
+	setStorage("SWDD 0 #516", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//gehe zu checkNumber2
+	setStorage("BD #" + checkNumber2, codeCounter);
+	codeCounter  = codeCounter + 2;										
+	
+	/*
+	 * number2ToPositiv
+	 */
+	//clr reg 3 and reset carry flag
+	setStorage("CLR 3", number2ToPositiv);
+	codeCounter=number2ToPositiv;
+	codeCounter  = codeCounter + 2;			
+	//lade zahl2
+	setStorage("LWDD 0 #502", codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//-1
+	setStorage("DEC", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//negiere
+	setStorage("NOT", codeCounter);
+	codeCounter  = codeCounter + 2;			
+	//save akku in address 510
+	setStorage("SWDD 0 #510", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//lade negativFlag
+	setStorage("LWDD 0 #516", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//wenn 0
+	setStorage("BNZD #" + decNegativFlag, codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//-1
+	setStorage("INC", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 516
+	setStorage("SWDD 0 #516", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//gehe zu shiftFlag
+	setStorage("BD #" + shiftFlag, codeCounter);
+	codeCounter  = codeCounter + 2;	
+	
+	/*
+	 * number2ToPositiv
+	 */	
+	//schiebe wieder zurück
+	setStorage("DEC", decNegativFlag);
+	codeCounter=decNegativFlag;
+	codeCounter  = codeCounter + 2;
+	//save akku in address 516
+	setStorage("SWDD 0 #516", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//gehe zu shiftFlag
+	setStorage("BD #" + shiftFlag, codeCounter);
+	codeCounter  = codeCounter + 2;					
+	
+	
+	/*
+	 * Multiplication
+	 */
+	//clr reg 3 and reset carry flag
+	setStorage("CLR 3", multiplicationFlag);
+	codeCounter=multiplicationFlag;
+	codeCounter  = codeCounter + 2;	
+	// //save akku in address 510
+	// setStorage("SWDD 0 #510", codeCounter);
+	// codeCounter  = codeCounter + 2;
+		// //lade address 508 in akku
+	// setStorage("LWDD 0 #508", codeCounter);
+	// codeCounter  = codeCounter + 2;
+	// //tmp counter um 1 reduzieren
+	// setStorage("DEC", codeCounter);
+	// codeCounter  = codeCounter + 2;			
+	// //save akku in address 508
+	// setStorage("SWDD 0 #520", codeCounter);
+	// codeCounter  = codeCounter + 2;		
+	
+	multiplicationLoopFlag = codeCounter;	
+	//load stellen counter von addresse 508
+	setStorage("LWDD 0 #508", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//wenn step counter 0 dann ist die multiplikation fertig und gehe zu interimResult
+	setStorage("BZD #" + interimResult, codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//wenn step counter nicht 0 dann reduziere um 1
+	setStorage("DEC", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save step counter in 508
+	setStorage("SWDD 0 #508", codeCounter);
+	codeCounter  = codeCounter + 2;				
+	//load number 1 into akku
+	setStorage("LWDD 0 #514", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//shift zahl 1 nach links 
+	setStorage("SLL", codeCounter);
+	codeCounter  = codeCounter + 2;
+
+	/*
+	 * setSecondPart
+	 */
+	//save akku in address 514
+	setStorage("SWDD 0 #514", codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//lade address 512 in akku
+	setStorage("LWDD 0 #512", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//wenn carry flag gesetzt dann geh zur +1
+	setStorage("BCD #" + setSecondPartAdd, codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//shift zahl 1 nach links 
+	setStorage("SLA", codeCounter);
+	codeCounter  = codeCounter + 2;
+
+	
+	
+	setSecondPartContinue=codeCounter;
+	//save akku in address 512
+	setStorage("SWDD 0 #512", codeCounter);
+	codeCounter  = codeCounter + 2;
+	// //lade address 512 in reg1
+	// setStorage("LWDD 1 #512", codeCounter);
+	// codeCounter  = codeCounter + 2;
+	// //addiere reg1 zu akku
+	// setStorage("ADD 1", codeCounter);
+	// codeCounter  = codeCounter + 2;
+	// //save akku in address 512
+	// setStorage("SWDD 0 #512", codeCounter);
+	// codeCounter  = codeCounter + 2;
+	// //lade address 514 in akku
+	// setStorage("LWDD 0 #514", codeCounter);
+	// codeCounter  = codeCounter + 2;	
+	//mach mit der multiplication weiter
+	setStorage("BD #" + multiplicationLoopFlag, codeCounter);
+	codeCounter  = codeCounter + 2;		
+	
+
+	//clr reg 3 and reset carry flag
+	setStorage("CLR 3", setSecondPartAdd);
+	codeCounter=setSecondPartAdd;
+	codeCounter  = codeCounter + 2;		
+	//shift zahl 1 nach links 
+	setStorage("SLA", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//addiere 1 zu akku		
+	setStorage("INC", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//gehe zu setSecondPartContinue
+	setStorage("BD #" + setSecondPartContinue, codeCounter);
+	codeCounter  = codeCounter + 2;				
+	
+	
+	/*
+	 * interimResult
+	 */
+	//lade address 512 in akku
+	setStorage("LWDD 0 #512", interimResult);
+	codeCounter=interimResult;
+	codeCounter  = codeCounter + 2;	
+	//lade address 504 in reg1
+	setStorage("LWDD 1 #504", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//addiere reg1 zu akku
+	setStorage("ADD 1", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 504
+	setStorage("SWDD 0 #504", codeCounter);
+	codeCounter  = codeCounter + 2;
+
+	/*
+	 * second interimResult (could have a overflow)
+	 */	
+		//lade address 514 in akku
+		interimResultSecond = codeCounter;
+		setStorage("LWDD 0 #514", interimResultSecond);
+		codeCounter=interimResultSecond;
+		codeCounter  = codeCounter + 2;	
+		//lade address 506 in reg1
+		setStorage("LWDD 1 #506", codeCounter);
+		codeCounter  = codeCounter + 2;
+		//addiere reg1 zu akku
+		setStorage("ADD 1", codeCounter);
+		codeCounter  = codeCounter + 2;				
+		//save akku in address 506
+		setStorage("SWDD 0 #506", codeCounter);
+		codeCounter  = codeCounter + 2;
+		//wenn carry flag gesetzt dann gehe zu secondInterimResultOverflow
+		setStorage("BCD #" + secondInterimResultOverflow, codeCounter);
+		codeCounter  = codeCounter + 2;	
+		//wenn carry flag nicht gesetzt dann gehe zu shiftFlag
+		setStorage("BD #" + shiftFlag, codeCounter);
+		codeCounter  = codeCounter + 2;					
+
+	/*
+	 * secondInterimResultOverflow
+	 */
+	//clr reg 3 and reset carry flag
+	setStorage("CLR 3", secondInterimResultOverflow);
+	codeCounter=secondInterimResultOverflow;
+	codeCounter  = codeCounter + 2;		
+	//lade address 504 in akku
+	setStorage("LWDD 0 #504", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//addiere 1 zu akku
+	setStorage("INC", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 504
+	setStorage("SWDD 0 #504", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//addition bzw. multiplikation ist beendet, es kann weiter geshiftet werden 
+	setStorage("BD #" + shiftFlag, codeCounter);
+	codeCounter  = codeCounter + 2;	
+	
+	//END
+	//lade address 516 in akku
+	setStorage("LWDD 0 #516", programmEndFlag);
+	codeCounter=programmEndFlag;
+	codeCounter  = codeCounter + 2;
+	//wenn negativCounter = 0, berechnung zu ende
+	setStorage("BZD #" + programmEndEndFlag, codeCounter);
+	codeCounter  = codeCounter + 2;
+	//wandle zahl in negative Zahl um
+	//lade grosse zahl
+	setStorage("LWDD 0 #504", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//negiere
+	setStorage("NOT", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//save akku in address 504
+	setStorage("SWDD 0 #504", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//lade kleine zahl
+	setStorage("LWDD 0 #506", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//negiere
+	setStorage("NOT", codeCounter);
+	codeCounter  = codeCounter + 2;	
+	//addiere 1 zu akku
+	setStorage("INC", codeCounter);
+	codeCounter  = codeCounter + 2;		
+	//save akku in address 506
+	setStorage("SWDD 0 #506", codeCounter);
+	codeCounter  = codeCounter + 2;
+	//wenn negativCounter = 0, berechnung zu ende
+	setStorage("BD #" + programmEndEndFlag, codeCounter);
+	codeCounter  = codeCounter + 2;								
+	//stop
+	setStorage("STOP", programmEndEndFlag);
+	codeCounter=programmEndEndFlag;
+	codeCounter  = codeCounter + 2;											
+	
+	
+	//eingaben
+	setStorage(1000, 500);
+	setStorage(25000, 502);
+	//resultate
+	setStorage(0, 504);
+	setStorage(0, 506);	
+	//counter für stelle
+	setStorage(-1, 508);	
+	//save position for second number
+	setStorage(0, 510);	
+	//zwischen resultat
+	setStorage(0, 512);
+	setStorage(0, 514);
+	//negativFlag
+	setStorage(0, 516);				
+			
+}
+
 function stepForward(){
 	runMnemonic(getStorage(getPC()));
 }
 
 function slow(){
-	var timer = setInterval(function() { if (endFlag == 0) {runMnemonic(getStorage(getPC()));} else {clearInterval(timer)} }, 1000)
+	timer = setInterval(function() { if (endFlag == 0) {runMnemonic(getStorage(getPC()));} else {clearInterval(timer)} }, 100)
+}
+
+function stopInterval(){
+	clearInterval(timer);
 }
 
 function fast(){
@@ -271,6 +663,32 @@ function incSC(){
 	setSCinGui();
 }
 
+function setResultFieldinGui(number){
+	$("#resultField" + number).val(resultFiled[number]);
+}
+
+function setResultField(x,number){
+	resultFiled[number] = parseInt(x);
+	setResultFieldinGui(number);
+}
+
+function getResultField(number){
+	return parseInt(resultFiled[number]);
+}
+
+function setResultinGui(){
+	var result = 0;
+	if (getResultField(1) > 500 && getResultField(1) > 500){
+		result = dec2twocomplement(getStorage(getResultField(1)),16) + "" + dec2twocomplement(getStorage(getResultField(2)),16);
+	} else if (getResultField(1) > 500){
+		result = dec2twocomplement(getStorage(getResultField(1)),16)
+	} else if (getResultField(2) > 500){
+		result = dec2twocomplement(getStorage(getResultField(2)),16)
+	}
+	$("#result").val(twocomplement2dec(result));
+	$("#resultBin").val(result);
+}
+
 // this functions updates the GUI 
 // it sets field value in GUI for the given register
 // the value is taken from global reg array
@@ -296,7 +714,7 @@ function getReg(number){
 	if(number == 0){
 		return getAkku();
 	} else {
-		return reg[number];
+		return parseInt(reg[number]);
 	}
 }
 
@@ -320,7 +738,7 @@ function setAkku(x){
 
 // returns the current value of akku
 function getAkku(){
-	return akku;
+	return parseInt(akku);
 }
 
 function setCarryFlaginGui(){
@@ -375,6 +793,9 @@ function setInputValueinGui(value,field,number){
 
 // stores the mnemonic in correct storage array field and calles GUI update function
 function setInputValueBin(value,field){
+	if(value >= max || value <= min){
+		alert('Input to big the range is ' + min + ' until ' + max);
+	}
 	var numberFind = new RegExp('[0-9]+', 'g');
 	var number = field.match(numberFind);
 	var inputOrdCodeFind = new RegExp('input', 'g');
@@ -528,6 +949,7 @@ function defineAction(x,executeCommand){
 		if(executeCommand){
 			//clear register
 			setReg(0,registerNumber);
+			setCarryFlag(false);
 			incPC();
 		}
 	
@@ -537,18 +959,64 @@ function defineAction(x,executeCommand){
 		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1110000000";
 		if(executeCommand){
 			//add register to akku
-			setAkku(getAkku() + getReg(registerNumber));
+			var akkuBin = dec2twocomplement(getAkku(),16);
+			var regBin = dec2twocomplement(getReg(registerNumber),16);
+			var newAkkuBin = "";
+			var stack = 0;
+			for(var i = akkuBin.length; i > 0; i--){
+				if (akkuBin.substring(i-1, i) == 1 && regBin.substring(i-1, i) == 1){
+					if(stack == 1){
+						newAkkuBin += "1";
+						stack = 1;
+					} else {
+						newAkkuBin += "0";
+						stack = 1;
+					}
+				} else if (akkuBin.substring(i-1, i) == 1){
+					if(stack == 1){
+						newAkkuBin += "0";
+						stack = 1;
+					} else {
+						newAkkuBin += "1";
+					}					
+				} else if (regBin.substring(i-1, i) == 1){
+					if(stack == 1){
+						newAkkuBin += "0";
+						stack = 1;
+					} else {
+						newAkkuBin += "1";
+					}					
+				} else {
+					if(stack == 1){
+						newAkkuBin += "1";
+						stack = 0;
+					} else {
+						newAkkuBin += "0";
+					}					
+				}
+			}
+			var reverseNewAkkuBin = "";
+			for(var i = newAkkuBin.length; i > 0; i--){
+				reverseNewAkkuBin += newAkkuBin.substring(i-1, i);
+			}
+			if (stack == 1){
+				setCarryFlag(true);
+			} else {
+				setCarryFlag(false);
+			}
+			setAkku(twocomplement2dec(reverseNewAkkuBin));			
 			incPC();
 		}				
 	
 	} else 	if (keyword == "ADDD"){
 		var numberFind = new RegExp('[-]?[1-9]+', 'g');
-		var number = x.match(numberFind);
+		var number = parseInt(x.match(numberFind));
 		output = "ADDD " + number;
 		outputBin = "1" + dec2twocomplement(number,15);		
 		if(executeCommand){
 			//add number to akku
-			setAkku(getAkku() + number);
+			var newAkku = getAkku() + parseInt(number);
+			setAkku(newAkku);
 			incPC();
 		}	
 			
@@ -557,7 +1025,8 @@ function defineAction(x,executeCommand){
 		outputBin = "0000000100000000";	
 		if(executeCommand){
 			//increase akku
-			setAkku(getAkku() + 1);
+			var newAkku = getAkku() + 1;
+			setAkku(newAkku);
 			incPC();
 		}	
 			
@@ -566,7 +1035,8 @@ function defineAction(x,executeCommand){
 		outputBin = "0000010000000000";		
 		if(executeCommand){
 			//decrease akku
-			setAkku(getAkku() - 1);
+			var newAkku = getAkku() - 1;
+			setAkku(newAkku);
 			incPC();
 		}
 		
@@ -669,7 +1139,7 @@ function defineAction(x,executeCommand){
 		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1000000000";
 		if(executeCommand){
 			var akkuBin = dec2twocomplement(getAkku(),16);
-			var regBin = dec2twocomplement(getReg(registerNumber));
+			var regBin = dec2twocomplement(getReg(registerNumber),16);
 			var newAkkuBin = "";
 			for(var i = 0; i < akkuBin.length; i++){
 				if (akkuBin.substring(i, i + 1) == regBin.substring(i, i + 1)){
@@ -688,7 +1158,7 @@ function defineAction(x,executeCommand){
 		outputBin = "0000" + growToNumberOfDigits(dec2bin(registerNumber),2) + "1100000000";
 		if(executeCommand){
 			var akkuBin = dec2twocomplement(getAkku(),16);
-			var regBin = dec2twocomplement(getReg(registerNumber));
+			var regBin = dec2twocomplement(getReg(registerNumber),16);
 			var newAkkuBin = "";
 			for(var i = 0; i < akkuBin.length; i++){
 				if (akkuBin.substring(i, i + 1) == 1 || regBin.substring(i, i + 1) == 1){
@@ -812,6 +1282,7 @@ function defineAction(x,executeCommand){
 		if(executeCommand){
 			endFlag = 1;
 			alert("END");
+			setResultinGui();
 			exit;
 		}	
 	
