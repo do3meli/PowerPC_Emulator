@@ -2,10 +2,11 @@
 <html>
 <head>
 <meta charset="UTF-8" />
+<title>PowerPC Emulator</title>
 <link href="css/bootstrap.css" rel="stylesheet" />
 <link href="css/style.css" rel="stylesheet" />
 <script src="js/jquery-1.8.2.min.js"></script>
-<script src="js/ppc_emulator.min.js"></script>
+<script src="js/ppc_emulator.js"></script>
 </head>
 <body onload="init();">
 	<div class="span3">
@@ -198,17 +199,18 @@
 			<input type="button" class="btn btn-inverse" onclick="fast();" value="Fast" />
 			<input type="button" class="btn btn-danger" onclick="stopInterval();" value="Stop" />
 		</div>	
-		<div id="programmes">
-			<input type="button" class="btn btn-primary" onclick="loadTest();" value="Load Test Programm" />&nbsp;
-			<input type="button" class="btn btn-danger" onclick="loadTestFail();" value="Load Test Fail Programm" />&nbsp;
-			<input type="button" class="btn btn-info" onclick="multiplication();" value="Load Multiplikation" />&nbsp;
-		</div>
 		<br>
 		<div id="resultDiv">
 			Resultat in Feld: <input type="text" class="input-mini" placeholder="Feld 1" id="resultField1" /> und <input type="text" class="input-mini" placeholder="Feld 2" id="resultField2" /><br>  
 			Result Bin: <input type="text" class="input-xlarge" placeholder="Resultat Bin" id="resultBin" /> <br>
-			Result: <input type="text" class="input" placeholder="Resultat" id="result" />
-		</div>										
+			Result: <input type="text" class="input" placeholder="Resultat" id="result" />									
+		</div><br>	
+		<div id="programmes">
+			<input type="button" class="btn btn-primary" onclick="loadTest();" value="Load Test Programm" />&nbsp;
+			<input type="button" class="btn btn-danger" onclick="loadTestFail();" value="Load Fail Programm" />&nbsp;
+			<br><br>
+			<input type="button" class="btn btn-info" onclick="loadMultiplication();" value="Load Multiplication Programm" />
+		</div>							
 	</div>		
 </body>
 </html>
