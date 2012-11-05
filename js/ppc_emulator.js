@@ -205,7 +205,7 @@ function loadTestFail(){
 	setStorage(16, 504);	
 }
 
-function multiplication (){
+function multiplication(){
 	init(false);
 	
 	setResultField(504,1);
